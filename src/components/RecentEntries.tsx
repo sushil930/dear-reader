@@ -1,34 +1,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { sampleEntries } from "@/data/entries";
 
 const RecentEntries = () => {
-  const entries = [
-    {
-      id: 1,
-      date: "June 25, 2025",
-      title: "The Noise Outside",
-      mood: "Reflective",
-      excerpt: "Sometimes the world feels too loud, and I wonder if the noise is outside or within...",
-      readTime: "4 min read"
-    },
-    {
-      id: 2,
-      date: "June 22, 2025",
-      title: "On Feeling Everything",
-      mood: "Nostalgic",
-      excerpt: "There's a particular ache that comes with feeling too much, too often...",
-      readTime: "6 min read"
-    },
-    {
-      id: 3,
-      date: "June 20, 2025",
-      title: "The Space Between Thoughts",
-      mood: "Still",
-      excerpt: "In the quiet moments between one thought and the next, I found something unexpected...",
-      readTime: "3 min read"
-    }
-  ];
+  const navigate = useNavigate();
+  
+  // Use the sample entries from our data
+  const entries = sampleEntries;
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -41,6 +21,10 @@ const RecentEntries = () => {
       default:
         return "bg-soft-gray/20 text-soft-gray";
     }
+  };
+
+  const handleEntryClick = (slug: string) => {
+    navigate(`/entry/${slug}`);
   };
 
   return (
@@ -61,6 +45,7 @@ const RecentEntries = () => {
               key={entry.id} 
               className="bg-cream/50 border-muted-brown/20 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
               style={{ animationDelay: `${index * 0.2}s` }}
+              onClick={() => handleEntryClick(entry.slug)}
             >
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
