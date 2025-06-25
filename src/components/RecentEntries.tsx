@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { sampleEntries } from "@/data/entries";
 
@@ -34,9 +35,16 @@ const RecentEntries = () => {
           <h2 className="text-3xl md:text-4xl font-garamond font-medium text-ink-blue mb-4">
             Recent Entries
           </h2>
-          <p className="text-lg font-garamond text-soft-gray max-w-2xl mx-auto">
+          <p className="text-lg font-garamond text-soft-gray max-w-2xl mx-auto mb-8">
             Glimpses into recent thoughts, observations, and quiet revelations
           </p>
+          <Button 
+            onClick={() => navigate('/entries')}
+            variant="outline"
+            className="border-muted-brown text-muted-brown hover:bg-sepia/20 hover:text-ink-blue"
+          >
+            View All Entries
+          </Button>
         </div>
         
         <div className="grid md:grid-cols-3 gap-8">
