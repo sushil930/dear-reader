@@ -1,5 +1,4 @@
-
-import { Brain, Sprout, Cloud, Mirror, BookOpen, Scroll } from "lucide-react";
+import { Brain, Sprout, Cloud, Eye, BookOpen, Scroll } from "lucide-react";
 
 const Topics = () => {
   const topics = [
@@ -19,7 +18,7 @@ const Topics = () => {
       description: "When thoughts become storms"
     },
     {
-      icon: Mirror,
+      icon: Eye,
       title: "Awareness",
       description: "Seeing ourselves clearly"
     },
