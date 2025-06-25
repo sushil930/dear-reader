@@ -149,7 +149,7 @@ const Entry = () => {
                         <span className="text-xs font-inter text-muted-brown">
                           {relatedEntry.date}
                         </span>
-                        <Badge variant="secondary" className={getMoodColor(relatedEntry.mood)} size="sm">
+                        <Badge variant="secondary" className={getMoodColor(relatedEntry.mood)}>
                           {relatedEntry.mood}
                         </Badge>
                       </div>
