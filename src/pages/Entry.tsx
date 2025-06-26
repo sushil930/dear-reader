@@ -35,86 +35,92 @@ const Entry = () => {
   const getMoodColor = (mood: string) => {
     switch (mood) {
       case "Reflective":
-        return "bg-forest-green/20 text-forest-green";
+        return "bg-forest-green/20 text-forest-green border-forest-green/30";
       case "Nostalgic":
-        return "bg-muted-brown/20 text-muted-brown";
+        return "bg-muted-brown/20 text-muted-brown border-muted-brown/30";
       case "Still":
-        return "bg-ink-blue/20 text-ink-blue";
+        return "bg-ink-blue/20 text-ink-blue border-ink-blue/30";
       default:
-        return "bg-soft-gray/20 text-soft-gray";
+        return "bg-soft-gray/20 text-soft-gray border-soft-gray/30";
     }
   };
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream relative">
+      {/* Decorative elements */}
+      <div className="ink-blot absolute top-20 left-20 opacity-15"></div>
+      <div className="ink-blot absolute top-40 right-32 opacity-10"></div>
+      
       {/* Navigation Header */}
-      <header className="border-b border-muted-brown/20 bg-cream/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-muted-brown/20 bg-cream/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
           <Button 
             onClick={() => navigate('/')}
             variant="ghost"
-            className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20"
+            className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Diary
           </Button>
           
           <nav className="text-sm font-inter text-soft-gray">
-            <span className="hover:text-ink-blue cursor-pointer" onClick={() => navigate('/')}>
+            <span className="hover:text-ink-blue cursor-pointer transition-colors" onClick={() => navigate('/')}>
               Home
             </span>
-            <span className="mx-2">/</span>
+            <span className="mx-2 text-muted-brown/50">•</span>
             <span className="text-muted-brown">Entry</span>
-            <span className="mx-2">/</span>
-            <span className="text-ink-blue">{entry.title}</span>
+            <span className="mx-2 text-muted-brown/50">•</span>
+            <span className="text-ink-blue font-medium">{entry.title}</span>
           </nav>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-12 grid lg:grid-cols-4 gap-12">
+      <div className="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-4 gap-16">
         {/* Main Content */}
-        <article className="lg:col-span-3 space-y-8">
+        <article className="lg:col-span-3 space-y-10">
           {/* Entry Header */}
-          <header className="space-y-6 pb-8 border-b border-muted-brown/10">
-            <div className="flex items-center gap-4 text-sm font-inter text-muted-brown">
-              <time dateTime={entry.createdAt}>{entry.date}</time>
-              <Badge variant="secondary" className={getMoodColor(entry.mood)}>
+          <header className="space-y-8 pb-10 border-b border-muted-brown/15">
+            <div className="flex items-center gap-6 text-sm font-inter text-muted-brown">
+              <time dateTime={entry.createdAt} className="tracking-wide">{entry.date}</time>
+              <Badge variant="outline" className={`${getMoodColor(entry.mood)} px-4 py-1`}>
                 {entry.mood}
               </Badge>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{entry.readTime}</span>
+                <span className="tracking-wide">{entry.readTime}</span>
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-garamond font-medium text-ink-blue leading-tight">
+            <h1 className="text-5xl md:text-6xl font-garamond font-medium text-ink-blue leading-tight drop-cap">
               {entry.title}
             </h1>
             
-            <p className="text-xl font-garamond text-soft-gray leading-relaxed italic">
+            <p className="text-2xl font-garamond text-soft-gray leading-relaxed italic handwritten">
               {entry.excerpt}
             </p>
           </header>
 
           {/* Entry Content */}
-          <div className="prose prose-lg max-w-none">
-            <div className="journal-lines paper-texture p-8 rounded-lg shadow-sm">
-              <div className="font-garamond text-lg leading-relaxed text-ink-blue whitespace-pre-line">
+          <div className="prose prose-xl max-w-none">
+            <div className="journal-lines paper-texture rounded-lg shadow-lg">
+              <div className="font-garamond text-xl leading-relaxed text-ink-blue whitespace-pre-line">
                 {entry.content}
               </div>
             </div>
           </div>
 
           {/* Entry Footer */}
-          <footer className="pt-8 border-t border-muted-brown/10 space-y-6">
+          <footer className="pt-10 border-t border-muted-brown/15 space-y-8">
+            <div className="ornamental-divider"></div>
+            
             {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              <Tag className="w-4 h-4 text-muted-brown" />
+            <div className="flex flex-wrap gap-3 items-center">
+              <Tag className="w-5 h-5 text-muted-brown" />
               {entry.tags.map((tag) => (
                 <Badge 
                   key={tag} 
                   variant="outline" 
-                  className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20"
+                  className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20 px-3 py-1 font-inter text-sm"
                 >
                   {tag}
                 </Badge>
@@ -122,38 +128,38 @@ const Entry = () => {
             </div>
 
             {/* Entry Stats */}
-            <div className="flex items-center gap-6 text-sm font-inter text-soft-gray">
-              <span>{entry.wordCount} words</span>
-              <span>Published {new Date(entry.createdAt).toLocaleDateString()}</span>
+            <div className="flex items-center gap-8 text-sm font-inter text-soft-gray">
+              <span className="tracking-wide">{entry.wordCount} words</span>
+              <span className="tracking-wide">Published {new Date(entry.createdAt).toLocaleDateString()}</span>
             </div>
           </footer>
         </article>
 
         {/* Sidebar */}
-        <aside className="space-y-8">
+        <aside className="space-y-10">
           {/* Related Entries */}
           {relatedEntries.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-garamond font-medium text-ink-blue">
+            <div className="space-y-6">
+              <h3 className="text-xl font-garamond font-medium text-ink-blue elegant-heading">
                 You Might Also Resonate With
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {relatedEntries.map((relatedEntry) => (
                   <Card 
                     key={relatedEntry.id}
-                    className="bg-cream/50 border-muted-brown/20 hover:shadow-md transition-all duration-300 cursor-pointer"
+                    className="vintage-card hover:shadow-lg transition-all duration-300 cursor-pointer group"
                     onClick={() => navigate(`/entry/${relatedEntry.slug}`)}
                   >
-                    <CardContent className="p-4 space-y-2">
+                    <CardContent className="p-6 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-inter text-muted-brown">
+                        <span className="text-xs font-inter text-muted-brown tracking-wide">
                           {relatedEntry.date}
                         </span>
-                        <Badge variant="secondary" className={getMoodColor(relatedEntry.mood)}>
+                        <Badge variant="outline" className={`${getMoodColor(relatedEntry.mood)} text-xs`}>
                           {relatedEntry.mood}
                         </Badge>
                       </div>
-                      <h4 className="font-garamond font-medium text-ink-blue leading-tight">
+                      <h4 className="font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors">
                         {relatedEntry.title}
                       </h4>
                       <p className="text-sm font-garamond text-soft-gray leading-relaxed">
@@ -167,25 +173,25 @@ const Entry = () => {
           )}
 
           {/* Reading Stats */}
-          <Card className="bg-sepia/20 border-muted-brown/20">
-            <CardContent className="p-6 space-y-3">
-              <h3 className="font-garamond font-medium text-ink-blue">About This Entry</h3>
-              <div className="space-y-2 text-sm font-inter">
+          <Card className="vintage-card border-muted-brown/20">
+            <CardContent className="p-8 space-y-4">
+              <h3 className="font-garamond font-medium text-ink-blue text-lg">About This Entry</h3>
+              <div className="space-y-3 text-sm font-inter">
                 <div className="flex justify-between">
-                  <span className="text-soft-gray">Reading time:</span>
-                  <span className="text-muted-brown">{entry.readTime}</span>
+                  <span className="text-soft-gray tracking-wide">Reading time:</span>
+                  <span className="text-muted-brown font-medium">{entry.readTime}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-soft-gray">Word count:</span>
-                  <span className="text-muted-brown">{entry.wordCount}</span>
+                  <span className="text-soft-gray tracking-wide">Word count:</span>
+                  <span className="text-muted-brown font-medium">{entry.wordCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-soft-gray">Mood:</span>
-                  <span className="text-muted-brown">{entry.mood}</span>
+                  <span className="text-soft-gray tracking-wide">Mood:</span>
+                  <span className="text-muted-brown font-medium">{entry.mood}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-soft-gray">Topics:</span>
-                  <span className="text-muted-brown">{entry.tags.length}</span>
+                  <span className="text-soft-gray tracking-wide">Topics:</span>
+                  <span className="text-muted-brown font-medium">{entry.tags.length}</span>
                 </div>
               </div>
             </CardContent>
