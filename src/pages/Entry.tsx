@@ -1,37 +1,29 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Tag } from "lucide-react";
 import { getEntryBySlug, getRelatedEntries } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-
 const Entry = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const {
+    slug
+  } = useParams<{
+    slug: string;
+  }>();
   const navigate = useNavigate();
-  
   const entry = slug ? getEntryBySlug(slug) : null;
-  
   if (!entry) {
-    return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+    return <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-garamond text-ink-blue">Entry Not Found</h1>
-          <Button 
-            onClick={() => navigate('/')}
-            variant="outline"
-            className="border-muted-brown text-muted-brown hover:bg-sepia/20"
-          >
+          <Button onClick={() => navigate('/')} variant="outline" className="border-muted-brown text-muted-brown hover:bg-sepia/20">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Return to Diary
           </Button>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   const relatedEntries = getRelatedEntries(entry);
-
   const getMoodColor = (mood: string) => {
     switch (mood) {
       case "Reflective":
@@ -44,9 +36,7 @@ const Entry = () => {
         return "bg-soft-gray/20 text-soft-gray border-soft-gray/30";
     }
   };
-
-  return (
-    <div className="min-h-screen bg-cream relative">
+  return <div className="min-h-screen bg-cream relative">
       {/* Decorative elements */}
       <div className="ink-blot absolute top-20 left-20 opacity-15"></div>
       <div className="ink-blot absolute top-40 right-32 opacity-10"></div>
@@ -54,11 +44,7 @@ const Entry = () => {
       {/* Navigation Header */}
       <header className="border-b border-muted-brown/20 bg-cream/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
-          <Button 
-            onClick={() => navigate('/')}
-            variant="ghost"
-            className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter"
-          >
+          <Button onClick={() => navigate('/')} variant="ghost" className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Diary
           </Button>
@@ -102,7 +88,7 @@ const Entry = () => {
 
           {/* Entry Content */}
           <div className="prose prose-xl max-w-none">
-            <div className="journal-lines paper-texture rounded-lg shadow-lg">
+            <div className="journal-lines paper-texture rounded-lg shadow-lg px-[20px] bg-transparent">
               <div className="font-garamond text-xl leading-relaxed text-ink-blue whitespace-pre-line">
                 {entry.content}
               </div>
@@ -116,15 +102,9 @@ const Entry = () => {
             {/* Tags */}
             <div className="flex flex-wrap gap-3 items-center">
               <Tag className="w-5 h-5 text-muted-brown" />
-              {entry.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
-                  variant="outline" 
-                  className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20 px-3 py-1 font-inter text-sm"
-                >
+              {entry.tags.map(tag => <Badge key={tag} variant="outline" className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20 px-3 py-1 font-inter text-sm">
                   {tag}
-                </Badge>
-              ))}
+                </Badge>)}
             </div>
 
             {/* Entry Stats */}
@@ -138,18 +118,12 @@ const Entry = () => {
         {/* Sidebar */}
         <aside className="space-y-10">
           {/* Related Entries */}
-          {relatedEntries.length > 0 && (
-            <div className="space-y-6">
+          {relatedEntries.length > 0 && <div className="space-y-6">
               <h3 className="text-xl font-garamond font-medium text-ink-blue elegant-heading">
                 You Might Also Resonate With
               </h3>
               <div className="space-y-6">
-                {relatedEntries.map((relatedEntry) => (
-                  <Card 
-                    key={relatedEntry.id}
-                    className="vintage-card hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                    onClick={() => navigate(`/entry/${relatedEntry.slug}`)}
-                  >
+                {relatedEntries.map(relatedEntry => <Card key={relatedEntry.id} className="vintage-card hover:shadow-lg transition-all duration-300 cursor-pointer group" onClick={() => navigate(`/entry/${relatedEntry.slug}`)}>
                     <CardContent className="p-6 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-inter text-muted-brown tracking-wide">
@@ -166,11 +140,9 @@ const Entry = () => {
                         {relatedEntry.excerpt.substring(0, 100)}...
                       </p>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Reading Stats */}
           <Card className="vintage-card border-muted-brown/20">
@@ -198,8 +170,6 @@ const Entry = () => {
           </Card>
         </aside>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Entry;
