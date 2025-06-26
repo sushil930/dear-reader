@@ -186,20 +186,20 @@
 
   /* Add hole punches on the left side - more visible */
   .diary-ruled-lines::before {
-    content: '';
+    /* content: ''; */
     position: absolute;
     left: 1.5rem;
     top: 3rem;
-    width: 0.4rem;
-    height: 0.4rem;
-    background: rgba(139, 115, 85, 0.7);
-    border-radius: 50%;
-    box-shadow: 
+    /* width: 0.4rem; */
+    /* height: 0.4rem; */
+    /* background: rgba(139, 115, 85, 0.7); */
+    /* border-radius: 50%; */
+    /* box-shadow: 
       0 3rem 0 rgba(139, 115, 85, 0.7),
       0 6rem 0 rgba(139, 115, 85, 0.7),
       0 9rem 0 rgba(139, 115, 85, 0.7),
       0 12rem 0 rgba(139, 115, 85, 0.7),
-      0 15rem 0 rgba(139, 115, 85, 0.7);
+      0 15rem 0 rgba(139, 115, 85, 0.7); */
   }
 
   /* Add decorative floral elements similar to the reference */

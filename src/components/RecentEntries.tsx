@@ -57,7 +57,7 @@ const RecentEntries = () => {
           {entries.map((entry, index) => (
             <Card 
               key={entry.id} 
-              className="vintage-card hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer group"
+              className="vintage-card cursor-pointer group"
               style={{ animationDelay: `${index * 0.2}s` }}
               onClick={() => handleEntryClick(entry.slug)}
             >
@@ -71,7 +71,7 @@ const RecentEntries = () => {
                   </Badge>
                 </div>
                 
-                <h3 className="text-2xl font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors duration-300">
+                <h3 className="text-2xl font-garamond font-medium text-ink-blue leading-tight">
                   {entry.title}
                 </h3>
                 
@@ -83,7 +83,7 @@ const RecentEntries = () => {
                   <span className="text-sm font-inter text-muted-brown tracking-wide">
                     {entry.readTime}
                   </span>
-                  <span className="text-sm font-inter text-forest-green group-hover:underline transition-all duration-300">
+                  <span className="text-sm font-inter text-forest-green">
                     Open Entry →
                   </span>
                 </div>

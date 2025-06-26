@@ -68,7 +68,7 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				// Vintage diary colors
-				cream: '#FDF8F2',
+				cream: 'rgba(253, 248, 242, 0.6)',
 				sepia: '#F4E4BC',
 				'ink-blue': '#2C3E50',
 				'forest-green': '#2D5A27',
@@ -127,5 +127,6 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require('@tailwindcss/typography')],
+
 } satisfies Config;

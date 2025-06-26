@@ -62,7 +62,7 @@ const Topics = () => {
               <h3 className="text-xl font-garamond font-medium text-ink-blue">
                 {topic.title}
               </h3>
-              <p className="text-soft-gray font-garamond text-sm leading-relaxed">
+              <p className="text-center text-soft-gray font-garamond text-sm leading-relaxed">
                 {topic.description}
               </p>
             </div>

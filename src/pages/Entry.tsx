@@ -89,15 +89,11 @@ const Entry = () => {
 
           {/* Entry Content */}
           <div className="prose prose-xl max-w-none">
-            <div className="journal-lines paper-texture rounded-lg shadow-lg px-[20px] bg-transparent diary-ruled-lines">
-              <div className="font-garamond text-xl leading-[2.5rem] text-ink-blue whitespace-pre-line py-8">
-                {entry.content}
-              </div>
-            </div>
+            {entry.content}
           </div>
 
           {/* Entry Footer */}
-          <footer className="pt-10 border-t border-muted-brown/15 space-y-8">
+          <footer className="pt-10 space-y-8">
             <div className="ornamental-divider"></div>
             
             {/* Tags */}
