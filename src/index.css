@@ -163,17 +163,17 @@
     min-height: 20rem;
   }
 
-  /* Diary-style ruled lines for content */
+  /* Diary-style ruled lines for content - Much more visible */
   .diary-ruled-lines {
     background-image: 
-      /* Left margin line - red line like in school notebooks */
-      linear-gradient(to right, transparent 0, transparent 3rem, rgba(220, 53, 69, 0.3) 3rem, rgba(220, 53, 69, 0.3) 3.1rem, transparent 3.1rem),
-      /* Horizontal ruling lines - blue lines */
+      /* Left margin line - more prominent brown line */
+      linear-gradient(to right, transparent 0, transparent 3rem, rgba(139, 115, 85, 0.6) 3rem, rgba(139, 115, 85, 0.6) 3.15rem, transparent 3.15rem),
+      /* Horizontal ruling lines - much more visible */
       repeating-linear-gradient(
         transparent,
         transparent 2.4rem,
-        rgba(139, 115, 85, 0.2) 2.4rem,
-        rgba(139, 115, 85, 0.2) 2.5rem
+        rgba(139, 115, 85, 0.5) 2.4rem,
+        rgba(139, 115, 85, 0.5) 2.45rem
       );
     padding-left: 4rem;
     padding-top: 1rem;
@@ -181,24 +181,39 @@
     padding-right: 2rem;
     min-height: 25rem;
     position: relative;
+    background-color: rgba(253, 248, 242, 0.8);
   }
 
-  /* Add hole punches on the left side */
+  /* Add hole punches on the left side - more visible */
   .diary-ruled-lines::before {
     content: '';
     position: absolute;
     left: 1.5rem;
     top: 3rem;
-    width: 0.3rem;
-    height: 0.3rem;
-    background: rgba(139, 115, 85, 0.3);
+    width: 0.4rem;
+    height: 0.4rem;
+    background: rgba(139, 115, 85, 0.7);
     border-radius: 50%;
     box-shadow: 
-      0 3rem 0 rgba(139, 115, 85, 0.3),
-      0 6rem 0 rgba(139, 115, 85, 0.3),
-      0 9rem 0 rgba(139, 115, 85, 0.3),
-      0 12rem 0 rgba(139, 115, 85, 0.3),
-      0 15rem 0 rgba(139, 115, 85, 0.3);
+      0 3rem 0 rgba(139, 115, 85, 0.7),
+      0 6rem 0 rgba(139, 115, 85, 0.7),
+      0 9rem 0 rgba(139, 115, 85, 0.7),
+      0 12rem 0 rgba(139, 115, 85, 0.7),
+      0 15rem 0 rgba(139, 115, 85, 0.7);
+  }
+
+  /* Add decorative floral elements similar to the reference */
+  .diary-ruled-lines::after {
+    content: '';
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    width: 3rem;
+    height: 3rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 10 C30 20, 20 40, 50 50 C80 40, 70 20, 50 10 Z M50 50 C60 70, 40 80, 50 90 C60 80, 40 70, 50 50 Z M50 50 C20 60, 10 40, 20 50 C10 60, 30 70, 50 50 Z M50 50 C80 40, 90 60, 80 50 C90 40, 70 30, 50 50 Z' fill='none' stroke='%238B7355' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.2;
   }
   
   .handwritten {
