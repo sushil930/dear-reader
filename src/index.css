@@ -162,6 +162,44 @@
     padding-bottom: 2rem;
     min-height: 20rem;
   }
+
+  /* Diary-style ruled lines for content */
+  .diary-ruled-lines {
+    background-image: 
+      /* Left margin line - red line like in school notebooks */
+      linear-gradient(to right, transparent 0, transparent 3rem, rgba(220, 53, 69, 0.3) 3rem, rgba(220, 53, 69, 0.3) 3.1rem, transparent 3.1rem),
+      /* Horizontal ruling lines - blue lines */
+      repeating-linear-gradient(
+        transparent,
+        transparent 2.4rem,
+        rgba(139, 115, 85, 0.2) 2.4rem,
+        rgba(139, 115, 85, 0.2) 2.5rem
+      );
+    padding-left: 4rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    padding-right: 2rem;
+    min-height: 25rem;
+    position: relative;
+  }
+
+  /* Add hole punches on the left side */
+  .diary-ruled-lines::before {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    top: 3rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    background: rgba(139, 115, 85, 0.3);
+    border-radius: 50%;
+    box-shadow: 
+      0 3rem 0 rgba(139, 115, 85, 0.3),
+      0 6rem 0 rgba(139, 115, 85, 0.3),
+      0 9rem 0 rgba(139, 115, 85, 0.3),
+      0 12rem 0 rgba(139, 115, 85, 0.3),
+      0 15rem 0 rgba(139, 115, 85, 0.3);
+  }
   
   .handwritten {
     font-family: 'EB Garamond', serif;

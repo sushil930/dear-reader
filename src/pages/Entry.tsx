@@ -4,6 +4,7 @@ import { getEntryBySlug, getRelatedEntries } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+
 const Entry = () => {
   const {
     slug
@@ -88,8 +89,8 @@ const Entry = () => {
 
           {/* Entry Content */}
           <div className="prose prose-xl max-w-none">
-            <div className="journal-lines paper-texture rounded-lg shadow-lg px-[20px] bg-transparent">
-              <div className="font-garamond text-xl leading-relaxed text-ink-blue whitespace-pre-line">
+            <div className="journal-lines paper-texture rounded-lg shadow-lg px-[20px] bg-transparent diary-ruled-lines">
+              <div className="font-garamond text-xl leading-[2.5rem] text-ink-blue whitespace-pre-line py-8">
                 {entry.content}
               </div>
             </div>
@@ -172,4 +173,5 @@ const Entry = () => {
       </div>
     </div>;
 };
+
 export default Entry;
