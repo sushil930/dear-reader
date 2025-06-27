@@ -124,7 +124,19 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.8s ease-out',
 				'gentle-float': 'gentle-float 6s ease-in-out infinite'
-			}
+			},
+            typography: ({ theme }: { theme: any }) => ({
+                DEFAULT: {
+                    css: {
+                        p: {
+                            lineHeight: '1.8',
+                            letterSpacing: '0.025em',
+                            textIndent: '1.5em',
+                            marginBottom: '1em',
+                        },
+                    },
+                },
+            }),
 		}
 	},
 	plugins: [require("tailwindcss-animate"), require('@tailwindcss/typography')],

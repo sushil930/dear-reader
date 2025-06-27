@@ -3,6 +3,7 @@ import { ArrowLeft, Clock, Tag } from "lucide-react";
 import { getEntryBySlug, getRelatedEntries } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Entry = () => {
@@ -12,6 +13,11 @@ const Entry = () => {
     slug: string;
   }>();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+
   const entry = slug ? getEntryBySlug(slug) : null;
   if (!entry) {
     return <div className="min-h-screen bg-cream flex items-center justify-center">
@@ -87,8 +93,15 @@ const Entry = () => {
             </p>
           </header>
 
+          {/* Entry Image */}
+          {entry.imageUrl && (
+            <div className="mb-8">
+              <img src={entry.imageUrl} alt={entry.title} className="w-full h-auto rounded-lg shadow-md" />
+            </div>
+          )}
+
           {/* Entry Content */}
-          <div className="prose prose-xl max-w-none">
+          <div className="prose prose-lg max-w-none font-garamond text-soft-gray">
             {entry.content}
           </div>
 

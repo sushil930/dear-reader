@@ -8,8 +8,8 @@ import { sampleEntries } from "@/data/entries";
 const RecentEntries = () => {
   const navigate = useNavigate();
   
-  // Use the sample entries from our data
-  const entries = sampleEntries;
+  // Use the sample entries from our data, limited to the 3 most recent
+  const entries = sampleEntries.slice(0, 3);
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -39,13 +39,13 @@ const RecentEntries = () => {
           <h2 className="elegant-heading text-4xl md:text-5xl font-garamond font-medium text-ink-blue mb-6">
             Recent Entries
           </h2>
-          <p className="text-xl font-garamond text-soft-gray max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-xl font-garamond text-center text-soft-gray max-w-2xl mx-auto mb-10 leading-relaxed">
             Glimpses into recent thoughts, observations, and quiet revelations
           </p>
           <Button 
             onClick={() => navigate('/entries')}
             variant="outline"
-            className="vintage-button border-muted-brown text-muted-brown hover:bg-sepia/20 hover:text-ink-blue px-8 py-3 rounded-full font-inter font-medium"
+            className="vintage-button border-muted-brown text-muted-brown hover:bg-sepia/20 hover:text-muted-brown px-8 py-3 rounded-full font-inter font-medium"
           >
             View All Entries
           </Button>
@@ -75,7 +75,7 @@ const RecentEntries = () => {
                   {entry.title}
                 </h3>
                 
-                <p className="text-soft-gray font-garamond leading-relaxed text-base text-justify">
+                <p className="text-center text-soft-gray font-garamond leading-relaxed text-base text-justify">
                   {entry.excerpt}
                 </p>
                 
