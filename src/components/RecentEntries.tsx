@@ -1,15 +1,22 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { sampleEntries } from "@/data/entries";
+import { loadAllEntries, DiaryEntry } from "@/data/entries";
+import { useState, useEffect } from 'react';
 
 const RecentEntries = () => {
   const navigate = useNavigate();
-  
-  // Use the sample entries from our data, limited to the 3 most recent
-  const entries = sampleEntries.slice(0, 3);
+  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      const allEntries = await loadAllEntries();
+      // Limit to the 3 most recent entries
+      setEntries(allEntries.slice(0, 3));
+    };
+    fetchEntries();
+  }, []);
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -29,13 +36,13 @@ const RecentEntries = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative">
+    <section id="recent-entries" className="pt-12 md:pt-20 pb-16 px-6 relative">
       {/* Decorative ink blots */}
-      <div className="ink-blot absolute top-12 left-12 opacity-20"></div>
-      <div className="ink-blot absolute top-32 right-16 opacity-15"></div>
+      <div className="ink-blot absolute top-8 left-12 opacity-20"></div>
+      <div className="ink-blot absolute top-24 right-16 opacity-15"></div>
       
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
           <h2 className="elegant-heading text-4xl md:text-5xl font-garamond font-medium text-ink-blue mb-6">
             Recent Entries
           </h2>
@@ -51,9 +58,9 @@ const RecentEntries = () => {
           </Button>
         </div>
         
-        <div className="ornamental-divider mb-16"></div>
+        <div className="ornamental-divider mb-12"></div>
         
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-3 gap-8">
           {entries.map((entry, index) => (
             <Card 
               key={entry.id} 
@@ -61,7 +68,7 @@ const RecentEntries = () => {
               style={{ animationDelay: `${index * 0.2}s` }}
               onClick={() => handleEntryClick(entry.slug)}
             >
-              <CardContent className="p-8 space-y-5">
+              <CardContent className="p-6 md:p-8 flex flex-col h-full text-left">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-inter text-muted-brown tracking-wide">
                     {entry.date}
@@ -72,11 +79,11 @@ const RecentEntries = () => {
                 </div>
                 
                 <h3 className="text-2xl font-garamond font-medium text-ink-blue leading-tight">
-                  {entry.title}
+                  {entry.title['en'] || ''}
                 </h3>
                 
-                <p className="text-center text-soft-gray font-garamond leading-relaxed text-base text-justify">
-                  {entry.excerpt}
+                <p className="text-center text-soft-gray font-garamond leading-relaxed text-base text-justify flex-grow">
+                  {entry.excerpt['en'] || ''}
                 </p>
                 
                 <div className="flex items-center justify-between pt-4 border-t border-muted-brown/10">

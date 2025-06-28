@@ -26,7 +26,7 @@ const Hero = () => {
         <div className="ornamental-divider my-8"></div>
         
         <div className="space-y-8">
-          <p className="text-xl font-garamond text-soft-gray max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl font-garamond text-soft-gray max-w-3xl text-center mx-auto leading-relaxed">
             Welcome to a quiet corner of the internet where psychology meets introspection, 
             where overthinking finds its voice, and where the unspoken thoughts of gentle souls 
             are given space to breathe.
@@ -35,6 +35,11 @@ const Hero = () => {
           <Button 
             size="lg" 
             className="vintage-button text-cream font-inter font-medium px-10 py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+            onClick={() => {
+              document.getElementById('recent-entries')?.scrollIntoView({
+                behavior: 'smooth'
+              });
+            }}
           >
             Read the Diary
           </Button>

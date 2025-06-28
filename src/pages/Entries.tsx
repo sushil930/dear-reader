@@ -1,8 +1,8 @@
 
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Filter, X } from "lucide-react";
-import { sampleEntries } from "@/data/entries";
+import { loadAllEntries, DiaryEntry } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,24 +10,47 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const Entries = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedTopic, setSelectedTopic] = useState<string>("all");
-  
+  const [allEntries, setAllEntries] = useState<DiaryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      setLoading(true);
+      const entries = await loadAllEntries();
+      setAllEntries(entries);
+
+      const queryParams = new URLSearchParams(location.search);
+      const topicParam = queryParams.get('topic');
+      if (topicParam) {
+        setSelectedTopic(topicParam);
+      }
+      setLoading(false);
+    };
+    fetchEntries();
+  }, [location.search]);
+
   // Get all unique topics from entries
   const allTopics = useMemo(() => {
     const topics = new Set<string>();
-    sampleEntries.forEach(entry => {
+    allEntries.forEach(entry => {
       entry.tags.forEach(tag => topics.add(tag));
     });
     return Array.from(topics).sort();
-  }, []);
+  }, [allEntries]);
 
   // Filter entries based on selected topic
   const filteredEntries = useMemo(() => {
     if (selectedTopic === "all") {
-      return sampleEntries;
+      return allEntries;
     }
-    return sampleEntries.filter(entry => entry.tags.includes(selectedTopic));
-  }, [selectedTopic]);
+    return allEntries.filter(entry => entry.tags.includes(selectedTopic));
+  }, [selectedTopic, allEntries]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-ink-blue text-xl font-garamond">Loading entries...</div>;
+  }
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -160,11 +183,11 @@ const Entries = () => {
                 </div>
                 
                 <h3 className="text-xl font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors">
-                  {entry.title}
+                  {entry.title.en}
                 </h3>
                 
                 <p className="text-soft-gray font-garamond leading-relaxed text-sm">
-                  {entry.excerpt}
+                  {entry.excerpt.en}
                 </p>
 
                 {/* Tags */}
@@ -173,7 +196,11 @@ const Entries = () => {
                     <Badge 
                       key={tag}
                       variant="outline" 
-                      className="text-xs border-muted-brown/20 text-muted-brown/80 hover:bg-sepia/10"
+                      className="text-xs border-muted-brown/20 text-muted-brown/80 hover:bg-sepia/10 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click from firing
+                        setSelectedTopic(tag);
+                      }}
                     >
                       {tag}
                     </Badge>

@@ -271,7 +271,7 @@
   }
 
   .ornamental-divider::after {
-    content: '⚜';
+    content: '❀';
     background: #FDF8F2;
     padding: 0 1rem;
     color: rgba(139, 115, 85, 0.6);

@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Tag } from "lucide-react";
-import { getEntryBySlug, getRelatedEntries } from "@/data/entries";
+import { loadAllEntries, getRelatedEntries, DiaryEntry } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import * as React from "react";
+import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 
 const Entry = () => {
   const {
@@ -13,12 +15,27 @@ const Entry = () => {
     slug: string;
   }>();
   const navigate = useNavigate();
+  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'es'>('en');
+  const [entry, setEntry] = useState<DiaryEntry | null>(null);
+  const [relatedEntries, setRelatedEntries] = useState<DiaryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
+  useEffect(() => {
+    const loadEntry = async () => {
+      setLoading(true);
+      const allEntries = await loadAllEntries();
+      const foundEntry = allEntries.find(e => e.slug === slug);
+      setEntry(foundEntry || null);
+      setRelatedEntries(foundEntry ? getRelatedEntries(allEntries, foundEntry) : []);
+      setLoading(false);
+    };
+    loadEntry();
   }, [slug]);
 
-  const entry = slug ? getEntryBySlug(slug) : null;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   if (!entry) {
     return <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -30,7 +47,6 @@ const Entry = () => {
         </div>
       </div>;
   }
-  const relatedEntries = getRelatedEntries(entry);
   const getMoodColor = (mood: string) => {
     switch (mood) {
       case "Reflective":
@@ -50,21 +66,32 @@ const Entry = () => {
       
       {/* Navigation Header */}
       <header className="border-b border-muted-brown/20 bg-cream/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
-        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
-          <Button onClick={() => navigate('/')} variant="ghost" className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Button 
+            onClick={() => navigate('/entries')} 
+            variant="ghost" 
+            className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Diary
+            Back to Entries
           </Button>
           
-          <nav className="text-sm font-inter text-soft-gray">
-            <span className="hover:text-ink-blue cursor-pointer transition-colors" onClick={() => navigate('/')}>
-              Home
-            </span>
-            <span className="mx-2 text-muted-brown/50">•</span>
-            <span className="text-muted-brown">Entry</span>
-            <span className="mx-2 text-muted-brown/50">•</span>
-            <span className="text-ink-blue font-medium">{entry.title}</span>
-          </nav>
+          <div className="hidden md:flex items-center">
+            <nav className="text-sm font-inter text-soft-gray flex items-center gap-2">
+              <span 
+                className="hover:text-ink-blue cursor-pointer transition-colors whitespace-nowrap truncate" 
+                onClick={() => navigate('/')}
+              >
+                Home
+              </span>
+              <span className="text-muted-brown/50">/</span>
+              <span className="text-muted-brown whitespace-nowrap">Entry</span>
+              <span className="text-muted-brown/50">/</span>
+              <span className="text-ink-blue font-medium whitespace-nowrap truncate">
+                {entry.title[currentLanguage] || entry.title['en']}
+              </span>
+            </nav>
+          </div>
         </div>
       </header>
 
@@ -85,36 +112,66 @@ const Entry = () => {
             </div>
             
             <h1 className="text-5xl md:text-6xl font-garamond font-medium text-ink-blue leading-tight drop-cap">
-              {entry.title}
+              {entry.title[currentLanguage] || entry.title['en']}
             </h1>
             
             <p className="text-2xl font-garamond text-soft-gray leading-relaxed italic handwritten">
-              {entry.excerpt}
+              {entry.excerpt[currentLanguage] || entry.excerpt['en']}
             </p>
           </header>
 
           {/* Entry Image */}
           {entry.imageUrl && (
             <div className="mb-8">
-              <img src={entry.imageUrl} alt={entry.title} className="w-full h-auto rounded-lg shadow-md" />
+              <img src={entry.imageUrl} alt={entry.title[currentLanguage] || entry.title['en']} className="w-full h-auto rounded-lg shadow-md" />
             </div>
           )}
 
           {/* Entry Content */}
           <div className="prose prose-lg max-w-none font-garamond text-soft-gray">
-            {entry.content}
+            <ReactMarkdown>{entry.content[currentLanguage] || entry.content['en']}</ReactMarkdown>
           </div>
 
           {/* Entry Footer */}
-          <footer className="pt-10 space-y-8">
+          <footer className="space-y-8">
             <div className="ornamental-divider"></div>
             
             {/* Tags */}
             <div className="flex flex-wrap gap-3 items-center">
               <Tag className="w-5 h-5 text-muted-brown" />
-              {entry.tags.map(tag => <Badge key={tag} variant="outline" className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20 px-3 py-1 font-inter text-sm">
+              {entry.tags.map(tag => (
+                <Badge 
+                  key={tag} 
+                  variant="outline" 
+                  className="border-muted-brown/30 text-muted-brown hover:bg-sepia/20 px-3 py-1 font-inter text-sm cursor-pointer"
+                  onClick={() => navigate(`/entries?topic=${tag}`)}
+                >
                   {tag}
-                </Badge>)}
+                </Badge>
+              ))}
+            </div>
+
+            {/* Language Selector */}
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-inter text-soft-gray">Read in:</span>
+              <div className="flex space-x-2">
+                <Button 
+                  onClick={() => setCurrentLanguage('en')} 
+                  variant={currentLanguage === 'en' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="border-muted-brown text-muted-brown hover:bg-sepia/20"
+                >
+                  English
+                </Button>
+                <Button 
+                  onClick={() => setCurrentLanguage('es')} 
+                  variant={currentLanguage === 'es' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="border-muted-brown text-muted-brown hover:bg-sepia/20"
+                >
+                  Español
+                </Button>
+              </div>
             </div>
 
             {/* Entry Stats */}
@@ -144,10 +201,10 @@ const Entry = () => {
                         </Badge>
                       </div>
                       <h4 className="font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors">
-                        {relatedEntry.title}
+                        {relatedEntry.title[currentLanguage] || relatedEntry.title['en']}
                       </h4>
                       <p className="text-sm font-garamond text-soft-gray leading-relaxed">
-                        {relatedEntry.excerpt.substring(0, 100)}...
+                        {(relatedEntry.excerpt[currentLanguage] || relatedEntry.excerpt['en']).substring(0, 100)}...
                       </p>
                     </CardContent>
                   </Card>)}
