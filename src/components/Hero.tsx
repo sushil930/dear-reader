@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
       {/* Floating feather */}
@@ -36,12 +38,10 @@ const Hero = () => {
             size="lg" 
             className="vintage-button text-cream font-inter font-medium px-10 py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
             onClick={() => {
-              document.getElementById('recent-entries')?.scrollIntoView({
-                behavior: 'smooth'
-              });
+              navigate('/auth');
             }}
           >
-            Read the Diary
+            Write a Diary
           </Button>
         </div>
       </div>

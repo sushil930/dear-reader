@@ -1,8 +1,7 @@
-
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Filter, X } from "lucide-react";
-import { loadAllEntries, DiaryEntry } from "@/data/entries";
+import { loadAllEntries, DiaryEntry } from "@/data/allEntries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

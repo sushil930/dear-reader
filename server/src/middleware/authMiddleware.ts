@@ -1,6 +1,7 @@
+/// <reference path="../types/express.d.ts" />
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../index';
+import { prisma } from '../index.js';
 
 interface DecodedToken {
   userId: string;

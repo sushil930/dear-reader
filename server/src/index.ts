@@ -24,8 +24,10 @@ app.get('/', (req, res) => {
   res.send('Reflections Diary API is running!');
 });
 
-import authRoutes from './routes/authRoutes';
+import authRoutes from './routes/authRoutes.js';
+import entryRoutes from './routes/entryRoutes.js';
 app.use('/api/auth', authRoutes);
+app.use('/api/entries', entryRoutes);
 
 // Start the server
 app.listen(PORT, () => {

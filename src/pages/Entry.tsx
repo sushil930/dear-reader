@@ -1,36 +1,66 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Tag } from "lucide-react";
-import { loadAllEntries, getRelatedEntries, DiaryEntry } from "@/data/entries";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import * as React from "react";
 import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
+import axios from 'axios';
+
+interface EntryData {
+  id: string;
+  slug: string;
+  lang: string;
+  translationGroup: string;
+  title: string;
+  content: string;
+  date: string;
+  mood: string;
+  readTime: string;
+  excerpt: string;
+  tags: string[];
+  bannerImage?: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId: string;
+  wordCount: number;
+}
 
 const Entry = () => {
-  const {
-    slug
-  } = useParams<{
-    slug: string;
-  }>();
+  const { lang, slug } = useParams<{ lang: string; slug: string }>();
   const navigate = useNavigate();
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'es'>('en');
-  const [entry, setEntry] = useState<DiaryEntry | null>(null);
-  const [relatedEntries, setRelatedEntries] = useState<DiaryEntry[]>([]);
+  const [entry, setEntry] = useState<EntryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [availableLanguages, setAvailableLanguages] = useState<EntryData[]>([]);
 
   useEffect(() => {
-    const loadEntry = async () => {
+    const fetchEntry = async () => {
       setLoading(true);
-      const allEntries = await loadAllEntries();
-      const foundEntry = allEntries.find(e => e.slug === slug);
-      setEntry(foundEntry || null);
-      setRelatedEntries(foundEntry ? getRelatedEntries(allEntries, foundEntry) : []);
-      setLoading(false);
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/entries/${lang}/${slug}`, {
+          withCredentials: true,
+        });
+        setEntry(response.data);
+    console.log("Fetched Entry Data:", response.data);
+
+        // Fetch all entries in the same translation group
+        if (response.data.translationGroup) {
+          const groupResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/entries/group/${response.data.translationGroup}`, {
+            withCredentials: true,
+          });
+          setAvailableLanguages(groupResponse.data);
+        }
+
+      } catch (error) {
+        console.error("Error fetching entry:", error);
+        setEntry(null);
+      } finally {
+        setLoading(false);
+      }
     };
-    loadEntry();
-  }, [slug]);
+    fetchEntry();
+  }, [lang, slug]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -88,7 +118,7 @@ const Entry = () => {
               <span className="text-muted-brown whitespace-nowrap">Entry</span>
               <span className="text-muted-brown/50">/</span>
               <span className="text-ink-blue font-medium whitespace-nowrap truncate">
-                {entry.title[currentLanguage] || entry.title['en']}
+                {entry.title}
               </span>
             </nav>
           </div>
@@ -112,24 +142,24 @@ const Entry = () => {
             </div>
             
             <h1 className="text-5xl md:text-6xl font-garamond font-medium text-ink-blue leading-tight drop-cap">
-              {entry.title[currentLanguage] || entry.title['en']}
+              {entry.title}
             </h1>
             
             <p className="text-2xl font-garamond text-soft-gray leading-relaxed italic handwritten">
-              {entry.excerpt[currentLanguage] || entry.excerpt['en']}
+              {entry.excerpt}
             </p>
           </header>
 
           {/* Entry Image */}
-          {entry.imageUrl && (
+          {entry.bannerImage && (
             <div className="mb-8">
-              <img src={entry.imageUrl} alt={entry.title[currentLanguage] || entry.title['en']} className="w-full h-auto rounded-lg shadow-md" />
+              <img src={entry.bannerImage} alt={entry.title} className="w-full h-auto rounded-lg shadow-md" />
             </div>
           )}
 
           {/* Entry Content */}
           <div className="prose prose-lg max-w-none font-garamond text-soft-gray">
-            <ReactMarkdown>{entry.content[currentLanguage] || entry.content['en']}</ReactMarkdown>
+            <ReactMarkdown>{entry.content}</ReactMarkdown>
           </div>
 
           {/* Entry Footer */}
@@ -139,7 +169,7 @@ const Entry = () => {
             {/* Tags */}
             <div className="flex flex-wrap gap-3 items-center">
               <Tag className="w-5 h-5 text-muted-brown" />
-              {entry.tags.map(tag => (
+              {(entry.tags ?? []).map(tag => (
                 <Badge 
                   key={tag} 
                   variant="outline" 
@@ -152,27 +182,24 @@ const Entry = () => {
             </div>
 
             {/* Language Selector */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-inter text-soft-gray">Read in:</span>
-              <div className="flex space-x-2">
-                <Button 
-                  onClick={() => setCurrentLanguage('en')} 
-                  variant={currentLanguage === 'en' ? 'default' : 'outline'} 
-                  size="sm" 
-                  className="border-muted-brown text-muted-brown hover:bg-sepia/20"
-                >
-                  English
-                </Button>
-                <Button 
-                  onClick={() => setCurrentLanguage('es')} 
-                  variant={currentLanguage === 'es' ? 'default' : 'outline'} 
-                  size="sm" 
-                  className="border-muted-brown text-muted-brown hover:bg-sepia/20"
-                >
-                  Español
-                </Button>
+            {availableLanguages.length > 1 && (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-inter text-soft-gray">Read in:</span>
+                <div className="flex space-x-2">
+                  {availableLanguages.map((langEntry) => (
+                    <Button
+                      key={langEntry.lang}
+                      onClick={() => navigate(`/${langEntry.lang}/${langEntry.slug}`)}
+                      variant={langEntry.lang === lang ? 'default' : 'outline'}
+                      size="sm"
+                      className="border-muted-brown text-muted-brown hover:bg-sepia/20"
+                    >
+                      {langEntry.lang.toUpperCase()}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Entry Stats */}
             <div className="flex items-center gap-8 text-sm font-inter text-soft-gray">
@@ -184,32 +211,7 @@ const Entry = () => {
 
         {/* Sidebar */}
         <aside className="space-y-10">
-          {/* Related Entries */}
-          {relatedEntries.length > 0 && <div className="space-y-6">
-              <h3 className="text-xl font-garamond font-medium text-ink-blue elegant-heading">
-                You Might Also Resonate With
-              </h3>
-              <div className="space-y-6">
-                {relatedEntries.map(relatedEntry => <Card key={relatedEntry.id} className="vintage-card hover:shadow-lg transition-all duration-300 cursor-pointer group" onClick={() => navigate(`/entry/${relatedEntry.slug}`)}>
-                    <CardContent className="p-6 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-inter text-muted-brown tracking-wide">
-                          {relatedEntry.date}
-                        </span>
-                        <Badge variant="outline" className={`${getMoodColor(relatedEntry.mood)} text-xs`}>
-                          {relatedEntry.mood}
-                        </Badge>
-                      </div>
-                      <h4 className="font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors">
-                        {relatedEntry.title[currentLanguage] || relatedEntry.title['en']}
-                      </h4>
-                      <p className="text-sm font-garamond text-soft-gray leading-relaxed">
-                        {(relatedEntry.excerpt[currentLanguage] || relatedEntry.excerpt['en']).substring(0, 100)}...
-                      </p>
-                    </CardContent>
-                  </Card>)}
-              </div>
-            </div>}
+          {/* Related Entries - Placeholder for future implementation. The related entries section is commented out because it is not yet implemented. */}
 
           {/* Reading Stats */}
           <Card className="vintage-card border-muted-brown/20">
@@ -230,7 +232,7 @@ const Entry = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-soft-gray tracking-wide">Topics:</span>
-                  <span className="text-muted-brown font-medium">{entry.tags.length}</span>
+                  <span className="text-muted-brown font-medium">{(entry.tags ?? []).length}</span>
                 </div>
               </div>
             </CardContent>

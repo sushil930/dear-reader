@@ -272,7 +272,7 @@
 
   .ornamental-divider::after {
     content: '❀';
-    background: #FDF8F2;
+    background: trans;
     padding: 0 1rem;
     color: rgba(139, 115, 85, 0.6);
     font-size: 1.2rem;
