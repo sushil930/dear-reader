@@ -2,19 +2,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import PenQuill from "@/assets/pen-quill.svg?url";
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden bg-cream">
-      
-      {/* Enhanced floating pen quill with animation */}
-      <img 
-        src={PenQuill} 
-        alt="Decorative pen quill" 
-        className="absolute bottom-16 right-16 w-40 opacity-60 rotate-12 animate-gentle-float"
-      />
 
       {/* Enhanced decorative ink blots */}
       <div className="ink-blot absolute top-16 left-20 opacity-30 w-6 h-6"></div>
