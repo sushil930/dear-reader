@@ -1,5 +1,6 @@
-
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Save, Send, Eye, Image, Tag, Smile } from 'lucide-react';
 
 const WriteEditor = () => {
+  const { user, token } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [mood, setMood] = useState('');
@@ -16,8 +18,9 @@ const WriteEditor = () => {
   const [newTag, setNewTag] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [isPreview, setIsPreview] = useState(false);
+  const [entryDate, setEntryDate] = useState(new Date().toLocaleDateString());
 
-  const moods = ['Peaceful', 'Excited', 'Contemplative', 'Joyful', 'Melancholy', 'Grateful', 'Inspired', 'Reflective'];
+  const moods = ['Peaceful', 'Excited', 'Contemplative', 'Joyful', 'Melancholy', 'Reflective', 'Energetic', 'Calm', 'Anxious', 'Hopeful'];
 
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -30,14 +33,63 @@ const WriteEditor = () => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     console.log('Saving draft...');
-    // Save to backend as draft
+    if (!user || !token) {
+      console.error('User not authenticated.');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/api/drafts', {
+        title,
+        content,
+        mood,
+        tags,
+        excerpt,
+        userId: user.id,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log('Draft saved:', response.data);
+      alert('Draft saved successfully!');
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      alert('Failed to save draft.');
+    }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     console.log('Publishing entry...');
-    // Publish to backend
+    if (!user || !token) {
+      console.error('User not authenticated.');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/api/entries', {
+        title,
+        content,
+        mood,
+        tags,
+        excerpt,
+        date: new Date().toISOString(),
+        userId: user.id,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log('Entry published:', response.data);
+      alert('Entry published successfully!');
+      // Optionally clear form or redirect
+      setTitle('');
+      setContent('');
+      setMood('');
+      setTags([]);
+      setNewTag('');
+      setExcerpt('');
+      setEntryDate(new Date().toLocaleDateString());
+    } catch (error) {
+      console.error('Error publishing entry:', error);
+      alert('Failed to publish entry.');
+    }
   };
 
   const EditorView = () => (
@@ -64,7 +116,10 @@ const WriteEditor = () => {
               </label>
               <Textarea
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => {
+                  console.log('Content textarea:', e.target.value);
+                  setContent(e.target.value);
+                }}
                 placeholder="Begin writing your story here... Let your thoughts flow freely onto the page."
                 className="min-h-96 font-garamond text-base bg-cream/50 border-2 border-muted-brown/30 focus:border-ink-blue resize-none leading-relaxed"
                 style={{
@@ -199,7 +254,7 @@ const WriteEditor = () => {
             {title || 'Untitled Entry'}
           </h1>
           <div className="flex items-center justify-center gap-4 text-muted-brown font-garamond">
-            <span>{new Date().toLocaleDateString()}</span>
+            <span>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entryDate))}</span>
             {mood && (
               <Badge className="bg-blue-100 text-blue-800">
                 {mood}

@@ -1,48 +1,15 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { FileText, Search, Clock, Edit, Trash2, Send } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const DraftManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
-
-  const drafts = [
-    {
-      id: 1,
-      title: 'Thoughts on Change',
-      lastModified: '2024-12-29 14:30',
-      wordCount: 234,
-      excerpt: 'Change is the only constant in life, yet we often resist it...',
-      tags: ['change', 'growth', 'reflection']
-    },
-    {
-      id: 2,
-      title: 'Summer Memories',
-      lastModified: '2024-12-28 09:15',
-      wordCount: 156,
-      excerpt: 'The warm breeze carried the scent of jasmine through the window...',
-      tags: ['summer', 'memories', 'nostalgia']
-    },
-    {
-      id: 3,
-      title: 'Late Night Musings',
-      lastModified: '2024-12-27 23:45',
-      wordCount: 89,
-      excerpt: 'Unable to sleep, I find myself contemplating the mysteries of existence...',
-      tags: ['late night', 'thoughts', 'philosophy']
-    },
-    {
-      id: 4,
-      title: '',
-      lastModified: '2024-12-26 16:20',
-      wordCount: 12,
-      excerpt: 'Today I feel...',
-      tags: []
-    }
-  ];
+  const { user } = useAuth();
+  const drafts = user?.drafts ? user.drafts : [];
 
   const handleContinueWriting = (draftId: number) => {
     console.log('Continue writing draft:', draftId);

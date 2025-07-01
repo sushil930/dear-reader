@@ -1,12 +1,36 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password,
+      });
+
+      login(response.data.token, response.data.user); // Update global auth state
+      navigate('/profile'); // Redirect to profile page
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-8 relative overflow-hidden bg-cream">
+    <section className="min-h-screen flex items-center justify-center px-6 py-8 relative overflow-hidden bg-cream h-auto" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
 
       {/* Enhanced decorative elements */}
       <div className="ink-blot absolute top-12 left-16 opacity-25 w-4 h-4"></div>
@@ -52,7 +76,7 @@ export default function Login() {
           
           <div className="ornamental-divider mb-6"></div>
           
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="relative">
               <label htmlFor="email" className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
                 Email Address
@@ -62,6 +86,8 @@ export default function Login() {
                 type="email" 
                 placeholder="Enter your email" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             
@@ -74,25 +100,28 @@ export default function Login() {
                 type="password" 
                 placeholder="Enter your password" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             <Button 
               type="submit" 
               className="w-full vintage-button text-cream font-garamond text-lg py-4 rounded-full mt-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
             >
-              <span className="relative z-10">Begin Writing</span>
+              <span className="relative z-10">Login</span>
             </Button>
           </form>
           
           <div className="mt-6 text-center">
             <p className="text-base text-muted-brown font-garamond">
-              Haven't started your diary yet?{' '}
+              Don't have an account?{' '}
               <Link 
                 to="/register" 
                 className="text-ink-blue hover:text-forest-green font-medium underline decoration-wavy decoration-muted-brown/40 underline-offset-4 transition-all duration-300 hover:decoration-forest-green/60"
               >
-                Create Your Journal
+                Register
               </Link>
             </p>
           </div>

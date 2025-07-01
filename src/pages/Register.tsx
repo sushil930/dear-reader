@@ -1,12 +1,40 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Register() {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', {
+        name: fullName, // Send fullName as 'name'
+        email,
+        password,
+      });
+      navigate('/login'); // Redirect to login page on successful registration
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-8 relative overflow-hidden bg-cream">
+    <section className="h-auto flex items-center justify-center px-6 py-8 relative overflow-hidden bg-cream" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
 
       {/* Enhanced decorative elements */}
       <div className="ink-blot absolute top-12 left-16 opacity-25 w-4 h-4"></div>
@@ -52,7 +80,7 @@ export default function Register() {
           
           <div className="ornamental-divider mb-6"></div>
           
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="relative">
               <label htmlFor="fullName" className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
                 Full Name
@@ -62,6 +90,8 @@ export default function Register() {
                 type="text" 
                 placeholder="Enter your full name" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 
@@ -74,6 +104,8 @@ export default function Register() {
                 type="email" 
                 placeholder="Enter your email" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             
@@ -86,6 +118,8 @@ export default function Register() {
                 type="password" 
                 placeholder="Create a password" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -98,9 +132,12 @@ export default function Register() {
                 type="password" 
                 placeholder="Confirm your password" 
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
             
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             <Button 
               type="submit" 
               className="w-full vintage-button text-cream font-garamond text-lg py-4 rounded-full mt-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
@@ -111,12 +148,12 @@ export default function Register() {
           
           <div className="mt-6 text-center">
             <p className="text-base text-muted-brown font-garamond">
-              Already have a journal?{' '}
+              Already have an account?{' '}
               <Link 
                 to="/login" 
                 className="text-ink-blue hover:text-forest-green font-medium underline decoration-wavy decoration-muted-brown/40 underline-offset-4 transition-all duration-300 hover:decoration-forest-green/60"
               >
-                Enter Your Diary
+                Login
               </Link>
             </p>
           </div>

@@ -1,18 +1,27 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit2, Calendar, BookOpen } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileHeader = () => {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('Sarah Mitchell');
-  const [bio, setBio] = useState('Capturing life\'s moments, one page at a time. Writer, dreamer, and keeper of memories.');
+  const [name, setName] = useState(user?.name || '');
+  const [bio, setBio] = useState(user?.bio || '');
+
+  // Update name when user data changes (e.g., after login)
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setBio(user.bio || '');
+    }
+  }, [user]);
 
   const handleSave = () => {
     setIsEditing(false);
-    // Save to backend
+    // TODO: Implement save to backend for name and bio
   };
 
   return (
@@ -32,7 +41,7 @@ const ProfileHeader = () => {
           <div className="w-32 h-32 rounded-full border-4 border-muted-brown/30 p-1 bg-cream">
             <Avatar className="w-full h-full">
               <AvatarImage src="/placeholder.svg" alt="Profile" />
-              <AvatarFallback className="text-2xl font-garamond text-ink-blue bg-cream">SM</AvatarFallback>
+              <AvatarFallback className="text-2xl font-garamond text-ink-blue bg-cream">{name ? name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
             </Avatar>
           </div>
           <Button
@@ -85,18 +94,22 @@ const ProfileHeader = () => {
                 </Button>
               </div>
               
-              <p className="text-lg font-garamond italic text-muted-brown leading-relaxed max-w-2xl">
-                {bio}
-              </p>
+              {bio && (
+                <p className="text-lg font-garamond italic text-muted-brown leading-relaxed max-w-2xl">
+                  {bio}
+                </p>
+              )}
 
+              {/* You can add dynamic user stats here if available from the backend */}
               <div className="flex flex-wrap items-center gap-6 justify-center md:justify-start text-muted-brown">
+                {/* Example of dynamic data points (replace with actual user data) */}
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
-                  <span className="font-garamond">Member since March 2024</span>
+                  <span className="font-garamond">Member since: {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
-                  <span className="font-garamond">127 day writing streak</span>
+                  <span className="font-garamond">Writing streak: {user?.writingStreak || 0} days</span>
                 </div>
               </div>
             </div>
@@ -104,22 +117,22 @@ const ProfileHeader = () => {
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats - Placeholder for dynamic data */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-muted-brown/20">
         <div className="text-center">
-          <div className="text-3xl font-garamond font-bold text-ink-blue">247</div>
+          <div className="text-3xl font-garamond font-bold text-ink-blue">{Array.isArray(user?.entries) ? user.entries.length : 0}</div>
           <div className="text-sm font-garamond text-muted-brown">Total Entries</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-garamond font-bold text-ink-blue">12.5K</div>
+          <div className="text-3xl font-garamond font-bold text-ink-blue">{user?.viewsThisMonth || 0}</div>
           <div className="text-sm font-garamond text-muted-brown">Total Views</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-garamond font-bold text-ink-blue">1.8K</div>
+          <div className="text-3xl font-garamond font-bold text-ink-blue">{user?.engagements || 0}</div>
           <div className="text-sm font-garamond text-muted-brown">Engagements</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-garamond font-bold text-ink-blue">234</div>
+          <div className="text-3xl font-garamond font-bold text-ink-blue">{user?.commentsCount || 0}</div>
           <div className="text-sm font-garamond text-muted-brown">Comments</div>
         </div>
       </div>

@@ -38,56 +38,56 @@ const Profile = () => {
         
         <div className="mt-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-cream/50 border-2 border-muted-brown/20 rounded-xl p-2 mb-8">
+            <TabsList className="flex w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl py-6 mb-8 overflow-hidden">
               <TabsTrigger 
                 value="dashboard" 
-                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-lg transition-all duration-300"
+                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
               >
                 Dashboard
               </TabsTrigger>
               <TabsTrigger 
                 value="entries" 
-                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-lg transition-all duration-300"
+                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
               >
                 My Entries
               </TabsTrigger>
               <TabsTrigger 
                 value="write" 
-                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-lg transition-all duration-300"
+                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
               >
                 Write New
               </TabsTrigger>
               <TabsTrigger 
                 value="drafts" 
-                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-lg transition-all duration-300"
+                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
               >
                 Drafts
               </TabsTrigger>
               <TabsTrigger 
                 value="settings" 
-                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-lg transition-all duration-300"
+                className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
               >
                 Settings
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="dashboard" className="space-y-8">
+            <TabsContent value="dashboard" className="space-y-8 transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block">
               <StatsCards />
             </TabsContent>
 
-            <TabsContent value="entries">
+            <TabsContent value="entries" className="transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block">
               <EntryManager />
             </TabsContent>
 
-            <TabsContent value="write">
+            <TabsContent value="write" className="transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block">
               <WriteEditor />
             </TabsContent>
 
-            <TabsContent value="drafts">
+            <TabsContent value="drafts" className="transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block">
               <DraftManager />
             </TabsContent>
 
-            <TabsContent value="settings">
+            <TabsContent value="settings" className="transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block">
               <ProfileSettings />
             </TabsContent>
           </Tabs>

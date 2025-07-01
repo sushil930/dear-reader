@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid, List, Eye, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useAuth } from '../../context/AuthContext';
 
 const EntryManager = () => {
   const [viewMode, setViewMode] = useState('grid');
@@ -14,48 +14,8 @@ const EntryManager = () => {
   const [sortBy, setSortBy] = useState('date');
   const [filterMood, setFilterMood] = useState('all');
 
-  const entries = [
-    {
-      id: 1,
-      title: 'Morning Reflections on Life',
-      date: '2024-12-29',
-      mood: 'Peaceful',
-      status: 'Published',
-      views: 124,
-      tags: ['reflection', 'morning', 'life'],
-      excerpt: 'Today I woke up feeling grateful for the simple things in life...'
-    },
-    {
-      id: 2,
-      title: 'City Adventures and New Discoveries',
-      date: '2024-12-28',
-      mood: 'Excited',
-      status: 'Published',
-      views: 89,
-      tags: ['adventure', 'city', 'discovery'],
-      excerpt: 'Exploring the hidden corners of the city revealed so many surprises...'
-    },
-    {
-      id: 3,
-      title: 'Quiet Evening Contemplations',
-      date: '2024-12-27',
-      mood: 'Contemplative',
-      status: 'Draft',
-      views: 0,
-      tags: ['evening', 'thoughts', 'peace'],
-      excerpt: 'As the sun sets, I find myself thinking about the choices we make...'
-    },
-    {
-      id: 4,
-      title: 'Weekend Memories with Family',
-      date: '2024-12-26',
-      mood: 'Joyful',
-      status: 'Published', 
-      views: 203,
-      tags: ['family', 'weekend', 'memories'],
-      excerpt: 'Spending time with loved ones always fills my heart with warmth...'
-    }
-  ];
+  const { user } = useAuth();
+  const entries = user?.entries ? user.entries : [];
 
   const getMoodColor = (mood: string) => {
     const colors: { [key: string]: string } = {
@@ -73,8 +33,8 @@ const EntryManager = () => {
       {entries.map((entry) => (
         <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300">
           <div className="flex justify-between items-start mb-4">
-            <Badge variant={entry.status === 'Published' ? 'default' : 'secondary'} className="font-garamond">
-              {entry.status}
+            <Badge variant="default" className="font-garamond">
+              Published
             </Badge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -141,20 +101,17 @@ const EntryManager = () => {
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-2">
                 <h3 className="text-xl font-garamond font-bold text-ink-blue">{entry.title}</h3>
-                <Badge variant={entry.status === 'Published' ? 'default' : 'secondary'} className="font-garamond">
-                  {entry.status}
-                </Badge>
+                <Badge variant="default" className="font-garamond">Published</Badge>
                 <Badge className={getMoodColor(entry.mood)}>
                   {entry.mood}
                 </Badge>
               </div>
-              
+              <p className="text-sm text-muted-brown font-garamond">{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))}</p>
               <p className="text-muted-brown font-garamond mb-3 line-clamp-2">
                 {entry.excerpt}
               </p>
-              
               <div className="flex items-center gap-6 text-sm text-muted-brown font-garamond">
-                <span>{entry.date}</span>
+                <span>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))}</span>
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   <span>{entry.views} views</span>

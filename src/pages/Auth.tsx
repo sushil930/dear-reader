@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Auth: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden bg-cream">
+    <section className="min-h-screen flex items-center justify-center px-6 py-8 relative overflow-hidden bg-cream h-auto" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
 
       {/* Enhanced decorative ink blots */}
       <div className="ink-blot absolute top-16 left-20 opacity-30 w-6 h-6"></div>
@@ -46,9 +45,7 @@ const Auth: React.FC = () => {
             </svg>
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-garamond font-medium text-ink-blue leading-tight mb-6 drop-cap">
-            Begin Your Reflection
-          </h1>
+          <h1 className="text-6xl md:text-7xl font-garamond font-medium text-ink-blue leading-tight mb-6">Begin Your Reflection</h1>
           
           <div className="w-24 h-px bg-gradient-to-r from-transparent via-muted-brown/50 to-transparent mx-auto mb-6"></div>
         </div>
@@ -67,7 +64,7 @@ const Auth: React.FC = () => {
               className="vintage-button text-cream font-garamond text-xl px-12 py-5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden group"
               onClick={() => navigate('/login')}
             >
-              <span className="relative z-10">Enter My Diary</span>
+              <span className="relative z-10">Login</span>
               <div className="absolute inset-0 bg-gradient-to-r from-forest-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </Button>
             
@@ -77,7 +74,7 @@ const Auth: React.FC = () => {
               className="font-garamond text-xl px-12 py-5 rounded-full border-3 border-ink-blue text-ink-blue bg-cream/50 transition-all duration-300 hover:bg-ink-blue hover:text-cream hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm"
               onClick={() => navigate('/register')}
             >
-              Start New Journal
+              Register
             </Button>
           </div>
           

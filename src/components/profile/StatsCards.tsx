@@ -1,22 +1,21 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { TrendingUp, Eye, Heart, MessageCircle, Calendar, Clock } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext'; // Corrected import path based on project structure
 
 const StatsCards = () => {
+  const { user } = useAuth();
+
+  console.log('Debug: StatsCards user -', user);
+
   const statsData = [
-    { title: 'Views This Month', value: '2,847', change: '+12%', icon: Eye, color: 'text-blue-600' },
-    { title: 'Engagements', value: '456', change: '+8%', icon: Heart, color: 'text-red-500' },
-    { title: 'Comments', value: '89', change: '+15%', icon: MessageCircle, color: 'text-green-600' },
-    { title: 'Reading Time', value: '24h 12m', change: '+5%', icon: Clock, color: 'text-purple-600' },
+    { title: 'Views This Month', value: user?.viewsThisMonth || '0', icon: Eye, color: 'text-blue-600' },
+    { title: 'Engagements', value: user?.engagements || '0', icon: Heart, color: 'text-red-500' },
+    { title: 'Comments', value: user?.commentsCount || '0', icon: MessageCircle, color: 'text-green-600' },
+    { title: 'Reading Time', value: user?.totalReadingTime || '0', icon: Clock, color: 'text-purple-600' }, // totalReadingTime is in minutes
   ];
 
-  const recentEntries = [
-    { title: 'Morning Reflections', date: '2024-12-29', views: 124, mood: 'Peaceful' },
-    { title: 'City Adventures', date: '2024-12-28', views: 89, mood: 'Excited' },
-    { title: 'Quiet Evening Thoughts', date: '2024-12-27', views: 156, mood: 'Contemplative' },
-    { title: 'Weekend Memories', date: '2024-12-26', views: 203, mood: 'Joyful' },
-  ];
+  const recentEntries = user?.entries ? user.entries.map(entry => ({ title: entry.title, date: entry.date, views: entry.views || 0, mood: entry.mood || 'N/A' })) : [];
 
   return (
     <div className="space-y-8">
@@ -28,9 +27,7 @@ const StatsCards = () => {
             <Card key={index} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <IconComponent className={`w-8 h-8 ${stat.color}`} />
-                <span className="text-sm font-garamond text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                  {stat.change}
-                </span>
+
               </div>
               <div className="space-y-2">
                 <p className="text-3xl font-garamond font-bold text-ink-blue">{stat.value}</p>
@@ -78,7 +75,7 @@ const StatsCards = () => {
           
           <div className="space-y-4">
             <div className="text-center p-4 bg-cream/50 rounded-lg">
-              <div className="text-4xl font-garamond font-bold text-ink-blue mb-2">127</div>
+              <div className="text-4xl font-garamond font-bold text-ink-blue mb-2">{user?.writingStreak || 127}</div>
               <div className="text-lg font-garamond text-muted-brown">Day Writing Streak</div>
             </div>
             

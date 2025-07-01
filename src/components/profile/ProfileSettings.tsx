@@ -1,5 +1,5 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -7,18 +7,27 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { User, Bell, Shield, Download, Palette, Globe } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileSettings = () => {
-  const [profileData, setProfileData] = useState({
-    displayName: 'Sarah Mitchell',
-    email: 'sarah.mitchell@email.com',
-    bio: 'Capturing life\'s moments, one page at a time.',
-    location: 'San Francisco, CA',
-    website: 'sarahmitchell.blog'
+  const { user, token, login } = useAuth();
+
+  const [profileData, setProfileData] = useState(user ? {
+    displayName: user.name || '',
+    email: user.email || '',
+    bio: user.bio || '',
+    location: user.location || '',
+    website: user.website || ''
+  } : {
+    displayName: '',
+    email: '',
+    bio: '',
+    location: '',
+    website: ''
   });
 
   const [preferences, setPreferences] = useState({
-    defaultMood: 'Peaceful',
+    defaultMood: '', // Replace with user preference if available from backend
     autoSave: true,
     publicProfile: false,
     showReadingTime: true,
@@ -293,6 +302,21 @@ const ProfileSettings = () => {
           </Button>
         </div>
       </Card>
+
+      <button onClick={async () => {
+        try {
+          const response = await axios.post('/api/auth/mock');
+          if (response.status === 200) {
+            login(token, response.data);
+            alert('User data mocked successfully!');
+          } else {
+            alert('Failed to mock user data');
+          }
+        } catch (error) {
+          console.error('Error mocking user data:', error);
+          alert('Error mocking user data');
+        }
+      }}>Mock Data</button>
     </div>
   );
 };

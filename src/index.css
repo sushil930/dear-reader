@@ -133,15 +133,7 @@
     -moz-hyphens: auto;
   }
 
-  /* Drop caps for special sections */
-  .drop-cap::first-letter {
-    float: left;
-    font-size: 3.5rem;
-    line-height: 1;
-    margin: 0.1em 0.1em 0 0;
-    font-weight: 600;
-    color: #2D5A27;
-  }
+
 }
 
 @layer components {

@@ -8,14 +8,32 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  resetToken       String?
-  resetTokenExpiry DateTime?
-  createdAt DateTime @default(now())
-  entries   Entry[]
+  id                  String     @id @default(cuid())
+  email               String     @unique
+  password            String
+  name                String?
+  bio                 String?
+  location            String?
+  website             String?
+  writingStreak       Int?       @default(0)
+  viewsThisMonth      Int?       @default(0)
+  engagements         Int?       @default(0)
+  commentsCount       Int?       @default(0)
+  totalReadingTime    Int?       @default(0) // in minutes
+  defaultMood         String?
+  autoSave            Boolean    @default(true)
+  publicProfile       Boolean    @default(false)
+  showReadingTime     Boolean    @default(true)
+  allowComments       Boolean    @default(true)
+  emailNotifications  Boolean    @default(true)
+  commentNotifications Boolean   @default(true)
+  likeNotifications   Boolean    @default(true)
+  weeklyDigest        Boolean    @default(true)
+  resetToken          String?
+  resetTokenExpiry    DateTime?
+  createdAt           DateTime   @default(now())
+  entries             Entry[]
+  drafts              Draft[]
 }
 
 model Entry {
@@ -25,16 +43,30 @@ model Entry {
   translationGroup String
   title            String
   content          String
-  date             String
-  mood             String
-  readTime         String
-  excerpt          String
+  date             DateTime  @default(now())
+  mood             String?
+  readTime         Int?      @default(0) // in minutes
+  excerpt          String?
   tags             String[]
   bannerImage      String?
+  views            Int?      @default(0)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   authorId         String
   author           User      @relation(fields: [authorId], references: [id])
 
-  @@unique([translationGroup, lang, slug]) // Add this line
+  @@unique([translationGroup, lang, slug])
+}
+
+model Draft {
+  id               String    @id @default(cuid())
+  title            String
+  content          String
+  mood             String?
+  excerpt          String?
+  tags             String[]
+  lastModified     DateTime  @updatedAt
+  wordCount        Int?      @default(0)
+  authorId         String
+  author           User      @relation(fields: [authorId], references: [id])
 }

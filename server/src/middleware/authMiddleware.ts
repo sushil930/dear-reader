@@ -10,7 +10,9 @@ interface DecodedToken {
 export const protect: RequestHandler = async (req, res, next) => {
   let token;
 
-  if (req.cookies.token) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.token) {
     token = req.cookies.token;
   }
 
@@ -19,6 +21,7 @@ export const protect: RequestHandler = async (req, res, next) => {
     return;
   }
 
+  console.log('Attempting to verify token:', token);
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
     req.userId = decoded.userId;
