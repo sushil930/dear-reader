@@ -27,6 +27,9 @@ app.get('/', (req, res) => {
 import authRoutes from './routes/authRoutes.js';
 import entryRoutes from './routes/entryRoutes.js';
 import draftRoutes from './routes/draftRoutes.js';
+
+
+
 app.use('/api/auth', authRoutes);
 app.use('/api/entries', entryRoutes);
 app.use('/api/drafts', draftRoutes);

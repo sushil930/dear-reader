@@ -247,121 +247,35 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
   }
 };
 
-// Mock user data for testing purposes
-export const mockUserData: RequestHandler = (async (req, res) => {
+export const updateUserProfile: RequestHandler = async (req, res) => {
+  const { name, bio, location, website, defaultMood, autoSave, publicProfile, showReadingTime, allowComments, emailNotifications, commentNotifications, likeNotifications, weeklyDigest } = req.body;
+
   try {
     // @ts-ignore
     const userId = req.userId;
+
     if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      res.status(401).json({ message: 'Not authorized, no user ID' });
+      return;
     }
-    const mockData = {
-      bio: 'Mock bio for testing',
-      location: 'Mock location',
-      website: 'https://mockwebsite.com',
-      writingStreak: 10,
-      viewsThisMonth: 100,
-      engagements: 50,
-      commentsCount: 20,
-      totalReadingTime: 500,
-      defaultMood: 'Happy',
-      autoSave: true,
-      publicProfile: true,
-      showReadingTime: true,
-      allowComments: true,
-      emailNotifications: true,
-      commentNotifications: true,
-      likeNotifications: true,
-      weeklyDigest: true,
-    };
-    const updatedUser = await prisma.user.update({
+
+    const user = await prisma.user.update({
       where: { id: userId },
-      data: mockData,
-    });
-
-    // Create mock entries
-    await prisma.entry.deleteMany({ where: { authorId: userId } }); // Remove old entries for clean mock
-    console.log('About to create mock entries for user:', userId);
-    let entryCreateResult;
-    try {
-      entryCreateResult = await prisma.entry.createMany({
-        data: [
-          {
-            authorId: userId,
-            slug: 'a-day-in-the-life',
-            lang: 'en',
-            translationGroup: 'mock-group-1',
-            title: 'A Day in the Life',
-            content: 'Today was a wonderful day full of learning and growth.',
-            date: new Date(),
-            mood: 'Happy',
-            readTime: 3,
-            excerpt: 'Today was a wonderful day...',
-            tags: ['life', 'journal'],
-            bannerImage: '',
-            views: 10,
-          },
-          {
-            authorId: userId,
-            slug: 'reflections-on-nature',
-            lang: 'en',
-            translationGroup: 'mock-group-2',
-            title: 'Reflections on Nature',
-            content: 'Nature always inspires me to write and reflect.',
-            date: new Date(Date.now() - 86400000),
-            mood: 'Peaceful',
-            readTime: 2,
-            excerpt: 'Nature always inspires...',
-            tags: ['nature', 'reflection'],
-            bannerImage: '',
-            views: 5,
-          },
-        ],
-      });
-      console.log('Mock entries created result:', entryCreateResult);
-    } catch (entryError) {
-      console.error('Error creating mock entries:', entryError);
-      return res.status(500).json({ message: 'Failed to create mock entries', error: entryError });
-    }
-
-    // Create mock drafts
-    await prisma.draft.deleteMany({ where: { authorId: userId } }); // Remove old drafts for clean mock
-    console.log('About to create mock drafts for user:', userId);
-    let draftCreateResult;
-    try {
-      draftCreateResult = await prisma.draft.createMany({
-        data: [
-          {
-            authorId: userId,
-            title: 'Draft: My Next Adventure',
-            content: 'Planning my next big adventure...',
-            mood: 'Excited',
-            excerpt: 'Planning my next big adventure...',
-            tags: ['adventure', 'plans'],
-            lastModified: new Date(),
-            wordCount: 7,
-          },
-          {
-            authorId: userId,
-            title: 'Draft: Thoughts on Writing',
-            content: 'Writing is a journey of self-discovery.',
-            mood: 'Reflective',
-            excerpt: 'Writing is a journey...',
-            tags: ['writing', 'thoughts'],
-            lastModified: new Date(Date.now() - 43200000),
-            wordCount: 6,
-          },
-        ],
-      });
-      console.log('Mock drafts created result:', draftCreateResult);
-    } catch (draftError) {
-      console.error('Error creating mock drafts:', draftError);
-      return res.status(500).json({ message: 'Failed to create mock drafts', error: draftError });
-    }
-
-    // Return the user with new entries and drafts
-    const userWithMockData = await prisma.user.findUnique({
-      where: { id: userId },
+      data: {
+        name: name !== undefined ? name : undefined,
+        bio: bio !== undefined ? bio : undefined,
+        location: location !== undefined ? location : undefined,
+        website: website !== undefined ? website : undefined,
+        defaultMood: defaultMood !== undefined ? defaultMood : undefined,
+        autoSave: autoSave !== undefined ? autoSave : undefined,
+        publicProfile: publicProfile !== undefined ? publicProfile : undefined,
+        showReadingTime: showReadingTime !== undefined ? showReadingTime : undefined,
+        allowComments: allowComments !== undefined ? allowComments : undefined,
+        emailNotifications: emailNotifications !== undefined ? emailNotifications : undefined,
+        commentNotifications: commentNotifications !== undefined ? commentNotifications : undefined,
+        likeNotifications: likeNotifications !== undefined ? likeNotifications : undefined,
+        weeklyDigest: weeklyDigest !== undefined ? weeklyDigest : undefined,
+      },
       select: {
         id: true,
         email: true,
@@ -384,39 +298,33 @@ export const mockUserData: RequestHandler = (async (req, res) => {
         likeNotifications: true,
         weeklyDigest: true,
         createdAt: true,
-        entries: {
+        entries: { // Include entries and drafts to match the structure returned by getCurrentUser
           select: {
-            id: true,
-            title: true,
-            content: true,
-            date: true,
-            mood: true,
-            readTime: true,
-            excerpt: true,
-            tags: true,
-            bannerImage: true,
-            views: true,
-            createdAt: true,
-            updatedAt: true,
-          },
+            id: true, title: true, content: true, date: true, mood: true, readTime: true, excerpt: true, tags: true, bannerImage: true, views: true, createdAt: true, updatedAt: true
+          }
         },
         drafts: {
           select: {
-            id: true,
-            title: true,
-            content: true,
-            mood: true,
-            excerpt: true,
-            tags: true,
-            lastModified: true,
-            wordCount: true,
-          },
-        },
-      },
+            id: true, title: true, content: true, mood: true, excerpt: true, tags: true, lastModified: true, wordCount: true
+          }
+        }
+      }
     });
-    res.status(200).json(userWithMockData);
+
+    res.json(user);
+    return;
   } catch (error) {
-    console.error('Error mocking user data:', error);
-    res.status(500).json({ message: 'Failed to mock user data', error });
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+    return;
   }
-}) as RequestHandler;
+};
+
+export default {
+  register,
+  login,
+  getCurrentUser,
+  forgotPassword,
+  resetPassword,
+  updateUserProfile
+};

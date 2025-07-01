@@ -59,6 +59,7 @@ interface AuthContextType {
   loading: boolean;
   login: (token: string, userData: IUser) => void;
   logout: () => void;
+  updateUser: (userData: Partial<IUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -107,8 +108,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     delete axios.defaults.headers.common['Authorization'];
   };
 
+  const updateUser = async (userData: Partial<IUser>) => {
+    if (!token) {
+      console.error('No token found. User not authenticated.');
+      return;
+    }
+    try {
+      const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUser(response.data); // Update local user state with response from backend
+      console.log('User profile updated successfully:', response.data);
+    } catch (error) {
+      console.error('Failed to update user profile:', error);
+      throw error; // Re-throw to allow error handling in components
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

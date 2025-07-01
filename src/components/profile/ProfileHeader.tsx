@@ -6,7 +6,7 @@ import { Edit2, Calendar, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const ProfileHeader = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -19,9 +19,14 @@ const ProfileHeader = () => {
     }
   }, [user]);
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // TODO: Implement save to backend for name and bio
+  const handleSave = async () => {
+    try {
+      await updateUser({ name, bio });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to save profile changes:', error);
+      // Optionally, show an error message to the user
+    }
   };
 
   return (

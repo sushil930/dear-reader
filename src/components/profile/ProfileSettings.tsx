@@ -1,4 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+// Debounce utility function
+const debounce = (func: Function, delay: number) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+};
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,40 +19,104 @@ import { User, Bell, Shield, Download, Palette, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const ProfileSettings = () => {
-  const { user, token, login } = useAuth();
+  const { user, token, login, updateUser } = useAuth();
 
-  const [profileData, setProfileData] = useState(user ? {
-    displayName: user.name || '',
-    email: user.email || '',
-    bio: user.bio || '',
-    location: user.location || '',
-    website: user.website || ''
-  } : {
-    displayName: '',
-    email: '',
-    bio: '',
-    location: '',
-    website: ''
+  const [profileData, setProfileData] = useState({
+    displayName: user?.name || '',
+    email: user?.email || '',
+    bio: user?.bio || '',
+    location: user?.location || '',
+    website: user?.website || ''
   });
 
   const [preferences, setPreferences] = useState({
-    defaultMood: '', // Replace with user preference if available from backend
-    autoSave: true,
-    publicProfile: false,
-    showReadingTime: true,
-    allowComments: true
+    defaultMood: user?.defaultMood || '',
+    autoSave: user?.autoSave ?? true,
+    publicProfile: user?.publicProfile ?? false,
+    showReadingTime: user?.showReadingTime ?? true,
+    allowComments: user?.allowComments ?? true
   });
 
   const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    commentNotifications: true,
-    likeNotifications: false,
-    weeklyDigest: true
+    emailNotifications: user?.emailNotifications ?? true,
+    commentNotifications: user?.commentNotifications ?? true,
+    likeNotifications: user?.likeNotifications ?? true,
+    weeklyDigest: user?.weeklyDigest ?? true
   });
 
-  const handleSaveProfile = () => {
-    console.log('Saving profile...');
-    // Save to backend
+  useEffect(() => {
+    if (user) {
+        setProfileData({
+          displayName: user.name || '',
+          email: user.email || '',
+          bio: user.bio || '',
+          location: user.location || '',
+          website: user.website || ''
+        });
+        setPreferences({
+          defaultMood: user.defaultMood || '',
+          autoSave: user.autoSave ?? true,
+          publicProfile: user.publicProfile ?? false,
+          showReadingTime: user.showReadingTime ?? true,
+          allowComments: user.allowComments ?? true
+        });
+        setNotifications({
+          emailNotifications: user.emailNotifications ?? true,
+          commentNotifications: user.commentNotifications ?? true,
+          likeNotifications: user.likeNotifications ?? true,
+          weeklyDigest: user.weeklyDigest ?? true
+        });
+    }
+  }, [user]);
+
+  // Debounced save function for preferences and notifications
+  const debouncedSave = useCallback(
+    debounce(async (data: Partial<any>) => {
+      try {
+        await updateUser(data);
+        console.log('Autosaved settings successfully!');
+      } catch (error) {
+        console.error('Failed to autosave settings:', error);
+      }
+    }, 1000), // 1-second debounce delay
+    [updateUser]
+  );
+
+  // Effect to trigger autosave when preferences or notifications change
+  useEffect(() => {
+    if (user) {
+      debouncedSave({
+        defaultMood: preferences.defaultMood,
+        autoSave: preferences.autoSave,
+        publicProfile: preferences.publicProfile,
+        showReadingTime: preferences.showReadingTime,
+        allowComments: preferences.allowComments,
+        emailNotifications: notifications.emailNotifications,
+        commentNotifications: notifications.commentNotifications,
+        likeNotifications: notifications.likeNotifications,
+        weeklyDigest: notifications.weeklyDigest,
+      });
+    }
+  }, [preferences, notifications, user, debouncedSave]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return; // Should not happen if component is protected
+
+      const updatedData = {
+        name: profileData.displayName,
+        email: profileData.email,
+        bio: profileData.bio,
+        location: profileData.location,
+        website: profileData.website,
+      };
+
+    try {
+      await updateUser(updatedData);
+      // Optionally, show a success message to the user
+    } catch (error) {
+      console.error('Failed to save profile settings:', error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const handleExportData = () => {
@@ -148,7 +221,7 @@ const ProfileSettings = () => {
             <label className="block font-garamond text-lg text-ink-blue mb-3 font-medium">
               Default Mood
             </label>
-            <Select value={preferences.defaultMood} onValueChange={(value) => setPreferences({...preferences, defaultMood: value})}>
+            <Select value={preferences.defaultMood} onValueChange={(value) => setPreferences(prev => ({...prev, defaultMood: value}))}>
               <SelectTrigger className="bg-cream/50 border-2 border-muted-brown/30 font-garamond">
                 <SelectValue />
               </SelectTrigger>
@@ -169,7 +242,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={preferences.autoSave}
-              onCheckedChange={(checked) => setPreferences({...preferences, autoSave: checked})}
+              onCheckedChange={(checked) => setPreferences(prev => ({...prev, autoSave: checked}))}
             />
           </div>
 
@@ -180,7 +253,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={preferences.showReadingTime}
-              onCheckedChange={(checked) => setPreferences({...preferences, showReadingTime: checked})}
+              onCheckedChange={(checked) => setPreferences(prev => ({...prev, showReadingTime: checked}))}
             />
           </div>
         </div>
@@ -201,7 +274,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={preferences.publicProfile}
-              onCheckedChange={(checked) => setPreferences({...preferences, publicProfile: checked})}
+              onCheckedChange={(checked) => setPreferences(prev => ({...prev, publicProfile: checked}))}
             />
           </div>
 
@@ -212,7 +285,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={preferences.allowComments}
-              onCheckedChange={(checked) => setPreferences({...preferences, allowComments: checked})}
+              onCheckedChange={(checked) => setPreferences(prev => ({...prev, allowComments: checked}))}
             />
           </div>
         </div>
@@ -233,7 +306,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={notifications.emailNotifications}
-              onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
+              onCheckedChange={(checked) => setNotifications(prev => ({...prev, emailNotifications: checked}))}
             />
           </div>
 
@@ -244,7 +317,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={notifications.commentNotifications}
-              onCheckedChange={(checked) => setNotifications({...notifications, commentNotifications: checked})}
+              onCheckedChange={(checked) => setNotifications(prev => ({...prev, commentNotifications: checked}))}
             />
           </div>
 
@@ -255,7 +328,7 @@ const ProfileSettings = () => {
             </div>
             <Switch
               checked={notifications.weeklyDigest}
-              onCheckedChange={(checked) => setNotifications({...notifications, weeklyDigest: checked})}
+              onCheckedChange={(checked) => setNotifications(prev => ({...prev, weeklyDigest: checked}))}
             />
           </div>
         </div>
@@ -302,21 +375,6 @@ const ProfileSettings = () => {
           </Button>
         </div>
       </Card>
-
-      <button onClick={async () => {
-        try {
-          const response = await axios.post('/api/auth/mock');
-          if (response.status === 200) {
-            login(token, response.data);
-            alert('User data mocked successfully!');
-          } else {
-            alert('Failed to mock user data');
-          }
-        } catch (error) {
-          console.error('Error mocking user data:', error);
-          alert('Error mocking user data');
-        }
-      }}>Mock Data</button>
     </div>
   );
 };
