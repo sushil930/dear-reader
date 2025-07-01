@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -22,16 +23,21 @@ const WriteEditor = () => {
 
   const moods = ['Peaceful', 'Excited', 'Contemplative', 'Joyful', 'Melancholy', 'Reflective', 'Energetic', 'Calm', 'Anxious', 'Hopeful'];
 
-  const addTag = () => {
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log('Content changing to:', e.target.value);
+    setContent(e.target.value);
+  }, []);
+
+  const addTag = useCallback(() => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
+      setTags(prev => [...prev, newTag.trim()]);
       setNewTag('');
     }
-  };
+  }, [newTag, tags]);
 
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-  };
+  const removeTag = useCallback((tagToRemove: string) => {
+    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+  }, []);
 
   const handleSaveDraft = async () => {
     console.log('Saving draft...');
@@ -78,7 +84,7 @@ const WriteEditor = () => {
       });
       console.log('Entry published:', response.data);
       alert('Entry published successfully!');
-      // Optionally clear form or redirect
+      // Clear form
       setTitle('');
       setContent('');
       setMood('');
@@ -116,10 +122,7 @@ const WriteEditor = () => {
               </label>
               <Textarea
                 value={content}
-                onChange={(e) => {
-                  console.log('Content textarea:', e.target.value);
-                  setContent(e.target.value);
-                }}
+                onChange={handleContentChange}
                 placeholder="Begin writing your story here... Let your thoughts flow freely onto the page."
                 className="min-h-96 font-garamond text-base bg-cream/50 border-2 border-muted-brown/30 focus:border-ink-blue resize-none leading-relaxed"
                 style={{
@@ -180,7 +183,12 @@ const WriteEditor = () => {
                 onChange={(e) => setNewTag(e.target.value)}
                 placeholder="Add a tag"
                 className="bg-cream/50 border-2 border-muted-brown/30 font-garamond text-sm"
-                onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
               />
               <Button onClick={addTag} size="sm" className="bg-ink-blue text-cream">
                 Add
