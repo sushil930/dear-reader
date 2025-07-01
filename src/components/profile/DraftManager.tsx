@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,17 +12,17 @@ const DraftManager = () => {
   const { user } = useAuth();
   const drafts = user?.drafts ? user.drafts : [];
 
-  const handleContinueWriting = (draftId: number) => {
+  const handleContinueWriting = (draftId: string) => {
     console.log('Continue writing draft:', draftId);
     // Navigate to editor with draft loaded
   };
 
-  const handlePublishDraft = (draftId: number) => {
+  const handlePublishDraft = (draftId: string) => {
     console.log('Publish draft:', draftId);
     // Publish draft
   };
 
-  const handleDeleteDraft = (draftId: number) => {
+  const handleDeleteDraft = (draftId: string) => {
     console.log('Delete draft:', draftId);
     // Delete draft
   };
