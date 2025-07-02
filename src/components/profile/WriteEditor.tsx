@@ -86,9 +86,9 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
             </label>
             
             {/* Enhanced Formatting Toolbar */}
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-3 shadow-sm">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-1 shadow-sm">
               {/* Text Formatting Row */}
-              <div className="flex flex-wrap items-center gap-1 mb-2">
+              <div className="flex flex-wrap items-center gap-1">
                 <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
                   <Button
                     type="button"

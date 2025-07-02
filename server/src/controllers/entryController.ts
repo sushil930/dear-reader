@@ -167,7 +167,7 @@ export const getAllByTranslationGroup: RequestHandler = async (req, res) => {
     });
 
     if (entries.length === 0) {
-      res.status(404).json({ message: 'No entries found for this translation group' });
+      res.status(200).json([]);
       return;
     }
 
