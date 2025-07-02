@@ -1,10 +1,10 @@
 
-import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import { IDraft, IEntry } from '@/context/AuthContext';
 import { Card, Input, Textarea, Button, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Badge } from '@/components/ui';
-import { Image as ImageComponent, Save, Smile, Tag, Eye, Send } from 'lucide-react';
+import { Image as ImageComponent, Save, Smile, Tag, Eye, Send, Bold, Italic, Underline, List, Quote, Heading1, Heading2, Link } from 'lucide-react';
 
 interface EditorViewProps {
   title: string;
@@ -25,7 +25,9 @@ interface EditorViewProps {
   setIsPreview: Dispatch<SetStateAction<boolean>>;
   handleSaveDraft: () => Promise<void>;
   handlePublish: () => Promise<void>;
-  handleImageUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>; // Add this
+  handleImageUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  handleFormatText: (format: string) => void;
 }
 
 interface PreviewViewProps {
@@ -36,7 +38,7 @@ interface PreviewViewProps {
   mood: string;
 }
 
-const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, isPreview, setIsPreview, handleSaveDraft, handlePublish, handleImageUpload }: EditorViewProps) => (
+const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, isPreview, setIsPreview, handleSaveDraft, handlePublish, handleImageUpload, textareaRef, handleFormatText }: EditorViewProps) => (
 
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
     {/* Main Editor */}
@@ -59,11 +61,91 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
             <label className="block font-garamond text-lg text-ink-blue mb-3 font-medium">
               Your Story
             </label>
+            
+            {/* Formatting Toolbar */}
+            <div className="flex flex-wrap gap-2 p-3 bg-cream/30 border-2 border-muted-brown/20 rounded-t-md border-b-0">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('bold')}
+              >
+                <Bold className="w-3 h-3" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('italic')}
+              >
+                <Italic className="w-3 h-3" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('underline')}
+              >
+                <Underline className="w-3 h-3" />
+              </Button>
+              <div className="w-px h-6 bg-muted-brown/20 mx-1"></div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('h1')}
+              >
+                <Heading1 className="w-3 h-3" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('h2')}
+              >
+                <Heading2 className="w-3 h-3" />
+              </Button>
+              <div className="w-px h-6 bg-muted-brown/20 mx-1"></div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('list')}
+              >
+                <List className="w-3 h-3" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('quote')}
+              >
+                <Quote className="w-3 h-3" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
+                onClick={() => handleFormatText('link')}
+              >
+                <Link className="w-3 h-3" />
+              </Button>
+            </div>
+
             <Textarea
+              ref={textareaRef}
               value={content}
               onChange={handleContentChange}
               placeholder="Begin writing your story here... Let your thoughts flow freely onto the page."
-              className="min-h-96 font-garamond text-base text-ink-blue bg-cream/50 border-2 border-muted-brown/30 focus:border-ink-blue resize-none leading-[1.6rem] p-4"
+              className="min-h-96 font-garamond text-base text-ink-blue bg-cream/50 border-2 border-muted-brown/30 focus:border-ink-blue resize-none leading-[1.6rem] p-4 rounded-t-none"
               style={{
                 backgroundImage: 'repeating-linear-gradient(transparent, transparent 1.5rem, rgba(139, 115, 85, 0.3) 1.5rem, rgba(139, 115, 85, 0.3) calc(1.5rem + 1px))',
                 backgroundSize: '100% 1.6rem',
@@ -250,6 +332,7 @@ const WriteEditor = () => {
   const [excerpt, setExcerpt] = useState('');
   const [isPreview, setIsPreview] = useState(false);
   const [entryDate, setEntryDate] = useState(new Date().toLocaleDateString());
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const moods = ['Peaceful', 'Excited', 'Contemplative', 'Joyful', 'Melancholy', 'Reflective', 'Energetic', 'Calm', 'Anxious', 'Hopeful'];
 
@@ -268,6 +351,63 @@ const WriteEditor = () => {
     setTags(prev => prev.filter(tag => tag !== tagToRemove));
   }, []);
 
+  const handleFormatText = useCallback((format: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end);
+    let formattedText = '';
+    let newCursorPos = start;
+
+    switch (format) {
+      case 'bold':
+        formattedText = `**${selectedText}**`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
+      case 'italic':
+        formattedText = `*${selectedText}*`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 1;
+        break;
+      case 'underline':
+        formattedText = `<u>${selectedText}</u>`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 3;
+        break;
+      case 'h1':
+        formattedText = `# ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
+      case 'h2':
+        formattedText = `## ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 3;
+        break;
+      case 'list':
+        formattedText = `- ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
+      case 'quote':
+        formattedText = `> ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
+      case 'link':
+        formattedText = `[${selectedText || 'link text'}](url)`;
+        newCursorPos = selectedText ? start + formattedText.length - 5 : start + 1;
+        break;
+      default:
+        return;
+    }
+
+    const newContent = content.substring(0, start) + formattedText + content.substring(end);
+    setContent(newContent);
+
+    // Set cursor position after state update
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }, [content]);
+
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -276,7 +416,6 @@ const WriteEditor = () => {
     formData.append('image', file);
 
     try {
-      // Assuming you have an API endpoint for image uploads
       const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -284,10 +423,9 @@ const WriteEditor = () => {
         },
       });
 
-      const imageUrl = response.data.imageUrl; // Adjust based on your backend response
+      const imageUrl = response.data.imageUrl;
       const imageMarkdown = `\n![${file.name}](${imageUrl})\n`;
 
-      // Insert image markdown into content at cursor position or end
       setContent(prevContent => prevContent + imageMarkdown);
       alert('Image uploaded and added to content!');
     } catch (error) {
@@ -295,7 +433,6 @@ const WriteEditor = () => {
       alert('Failed to upload image.');
     }
   };
-
 
   const handleSaveDraft = async () => {
     if (!user || !token) {
@@ -312,7 +449,7 @@ const WriteEditor = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      addDraftToUser(response.data); // Add the newly created draft to the user's drafts in AuthContext
+      addDraftToUser(response.data);
       alert('Draft saved successfully!');
     } catch (error) {
       alert('Failed to save draft.');
@@ -335,7 +472,7 @@ const WriteEditor = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      addEntryToUser(response.data); // Add the newly created entry to the user's entries in AuthContext
+      addEntryToUser(response.data);
       alert('Entry published successfully!');
       // Clear form
       setTitle('');
@@ -388,16 +525,14 @@ const WriteEditor = () => {
           setIsPreview={setIsPreview}
           handleSaveDraft={handleSaveDraft}
           handlePublish={handlePublish}
-          handleImageUpload={handleImageUpload} // Pass handleImageUpload prop
+          handleImageUpload={handleImageUpload}
+          textareaRef={textareaRef}
+          handleFormatText={handleFormatText}
           isPreview={isPreview}
         />
       }
     </div>
   );
 };
-
-
-
-
 
 export default WriteEditor;
