@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Filter, X } from "lucide-react";
-import { loadAllEntries, DiaryEntry } from "@/data/allEntries";
 import { Button } from "@/components/ui/button";
+import { useAuth, IEntry } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,24 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const Entries = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, loading } = useAuth();
   const [selectedTopic, setSelectedTopic] = useState<string>("all");
-  const [allEntries, setAllEntries] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const allEntries: IEntry[] = user?.entries || [];
 
   useEffect(() => {
-    const fetchEntries = async () => {
-      setLoading(true);
-      const entries = await loadAllEntries();
-      setAllEntries(entries);
-
-      const queryParams = new URLSearchParams(location.search);
-      const topicParam = queryParams.get('topic');
-      if (topicParam) {
-        setSelectedTopic(topicParam);
-      }
-      setLoading(false);
-    };
-    fetchEntries();
+    const queryParams = new URLSearchParams(location.search);
+    const topicParam = queryParams.get('topic');
+    if (topicParam) {
+      setSelectedTopic(topicParam);
+    }
   }, [location.search]);
 
   // Get all unique topics from entries
@@ -182,11 +175,11 @@ const Entries = () => {
                 </div>
                 
                 <h3 className="text-xl font-garamond font-medium text-ink-blue leading-tight group-hover:text-forest-green transition-colors">
-                  {entry.title.en}
+                  {entry.title}
                 </h3>
                 
                 <p className="text-soft-gray font-garamond leading-relaxed text-sm">
-                  {entry.excerpt.en}
+                  {entry.excerpt}
                 </p>
 
                 {/* Tags */}

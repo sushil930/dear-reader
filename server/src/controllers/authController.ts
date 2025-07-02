@@ -206,6 +206,7 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
         entries: {
           select: {
             id: true,
+            slug: true,
             title: true,
             content: true,
             date: true,

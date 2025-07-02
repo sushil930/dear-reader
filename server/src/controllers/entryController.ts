@@ -33,9 +33,47 @@ export const getAllUserEntries: RequestHandler = async (req, res) => {
 };
 
 // Create a new entry for the authenticated user
+// Helper function to generate a slug from a title
+const generateSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[\s_]+/g, '-') // Replace spaces and underscores with - 
+    .replace(/[^a-z0-9-]+/g, '') // Remove all non-word chars
+    .replace(/^-+|-+$/g, ''); // Trim - from start and end
+};
+
+// Helper function to calculate word count
+const calculateWordCount = (content: string): number => {
+  if (!content) return 0;
+  const words = content.trim().split(/\s+/);
+  return words.length;
+};
+
+// Helper function to estimate read time (e.g., 200 words per minute)
+const calculateReadTime = (wordCount: number): number => {
+  if (wordCount === 0) return 0;
+  return Math.ceil(wordCount / 200);
+};
+
 export const createEntry: RequestHandler = async (req, res) => {
-  let { slug, lang, title, content, date, mood, readTime, excerpt, tags, bannerImage, translationGroup } = req.body;
+  let { slug, lang, title, content, date, mood, excerpt, tags, bannerImage, translationGroup } = req.body;
+
+  const wordCount = calculateWordCount(content);
+  const readTime = calculateReadTime(wordCount);
+
+  // Ensure tags is an array
   tags = Array.isArray(tags) ? tags : [];
+
+  // Generate slug if not provided
+  if (!slug && title) {
+    slug = generateSlug(title);
+  }
+
+  // Set default language if not provided
+  if (!lang) {
+    lang = 'en'; // Default to English
+  }
 
   // If translationGroup is not provided, generate a new one (for the first entry in a group)
   if (!translationGroup) {
@@ -52,8 +90,8 @@ export const createEntry: RequestHandler = async (req, res) => {
 
     const newEntry = await prisma.entry.create({
       data: {
-        slug,
-        lang,
+        slug: slug || '', // Ensure slug is not undefined
+        lang: lang || 'en', // Ensure lang is not undefined
         title,
         content,
         date,
@@ -61,7 +99,8 @@ export const createEntry: RequestHandler = async (req, res) => {
         readTime,
         excerpt,
         tags,
-        bannerImage,
+        wordCount,
+        bannerImage: bannerImage || null, // Set to null if not provided
         translationGroup, // Add translationGroup
         authorId: userId, // Link entry to the authenticated user
       },

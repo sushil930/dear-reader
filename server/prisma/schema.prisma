@@ -46,6 +46,7 @@ model Entry {
   date             DateTime  @default(now())
   mood             String?
   readTime         Int?      @default(0) // in minutes
+  wordCount        Int?      @default(0)
   excerpt          String?
   tags             String[]
   bannerImage      String?

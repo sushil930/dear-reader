@@ -17,6 +17,28 @@ const EntryManager = () => {
   const { user } = useAuth();
   const entries = user?.entries ? user.entries : [];
 
+  const filteredEntries = entries.filter(entry =>
+    entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    entry.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    entry.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    entry.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const moodFilteredEntries = filterMood === 'all'
+    ? filteredEntries
+    : filteredEntries.filter(entry => entry.mood === filterMood);
+
+  const sortedEntries = [...moodFilteredEntries].sort((a, b) => {
+    if (sortBy === 'date') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    } else if (sortBy === 'views') {
+      return (b.views || 0) - (a.views || 0);
+    } else if (sortBy === 'title') {
+      return a.title.localeCompare(b.title);
+    }
+    return 0;
+  });
+
   const getMoodColor = (mood: string) => {
     const colors: { [key: string]: string } = {
       'Peaceful': 'bg-blue-100 text-blue-800',
@@ -30,7 +52,7 @@ const EntryManager = () => {
 
   const GridView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {entries.map((entry) => (
+      {sortedEntries.map((entry) => (
         <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300">
           <div className="flex justify-between items-start mb-4">
             <Badge variant="default" className="font-garamond">
@@ -95,7 +117,7 @@ const EntryManager = () => {
 
   const ListView = () => (
     <div className="space-y-4">
-      {entries.map((entry) => (
+      {sortedEntries.map((entry) => (
         <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-md transition-all duration-300">
           <div className="flex items-center justify-between">
             <div className="flex-1">

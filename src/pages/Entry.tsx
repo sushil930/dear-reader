@@ -16,19 +16,20 @@ interface EntryData {
   title: string;
   content: string;
   date: string;
-  mood: string;
-  readTime: string;
-  excerpt: string;
+  mood?: string;
+  readTime?: number;
+  excerpt?: string;
   tags: string[];
   bannerImage?: string;
   createdAt: string;
   updatedAt: string;
   authorId: string;
-  wordCount: number;
+  wordCount?: number;
 }
 
 const Entry = () => {
-  const { lang, slug } = useParams<{ lang: string; slug: string }>();
+  const { slug } = useParams<{ slug: string }>();
+  const lang = 'en'; // Hardcode language to 'en' as it's not in the URL path anymore
   const navigate = useNavigate();
   const [entry, setEntry] = useState<EntryData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,7 @@ const Entry = () => {
     const fetchEntry = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/entries/${lang}/${slug}`, {
+        const response = await axios.get(`/api/entries/${lang}/${slug}`, { // lang is now hardcoded to 'en'
           withCredentials: true,
         });
         setEntry(response.data);
@@ -46,7 +47,7 @@ const Entry = () => {
 
         // Fetch all entries in the same translation group
         if (response.data.translationGroup) {
-          const groupResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/entries/group/${response.data.translationGroup}`, {
+          const groupResponse = await axios.get(`/api/entries/group/${response.data.translationGroup}`, {
             withCredentials: true,
           });
           setAvailableLanguages(groupResponse.data);
@@ -137,7 +138,7 @@ const Entry = () => {
               </Badge>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span className="tracking-wide">{entry.readTime}</span>
+                <span className="tracking-wide">{entry.readTime ?? 'N/A'}</span>
               </div>
             </div>
             
@@ -146,20 +147,20 @@ const Entry = () => {
             </h1>
             
             <p className="text-2xl font-garamond text-soft-gray leading-relaxed italic handwritten">
-              {entry.excerpt}
+              {entry.excerpt ?? ''}
             </p>
           </header>
 
           {/* Entry Image */}
           {entry.bannerImage && (
             <div className="mb-8">
-              <img src={entry.bannerImage} alt={entry.title} className="w-full h-auto rounded-lg shadow-md" />
+              <img src={entry.bannerImage} alt={entry.title ?? 'Entry Banner'} className="w-full h-auto rounded-lg shadow-md" />
             </div>
           )}
 
           {/* Entry Content */}
           <div className="prose prose-lg max-w-none font-garamond text-soft-gray">
-            <ReactMarkdown>{entry.content}</ReactMarkdown>
+            {entry.content ? <ReactMarkdown>{entry.content}</ReactMarkdown> : <p>No content available.</p>}
           </div>
 
           {/* Entry Footer */}
@@ -203,8 +204,8 @@ const Entry = () => {
 
             {/* Entry Stats */}
             <div className="flex items-center gap-8 text-sm font-inter text-soft-gray">
-              <span className="tracking-wide">{entry.wordCount} words</span>
-              <span className="tracking-wide">Published {new Date(entry.createdAt).toLocaleDateString()}</span>
+              <span className="tracking-wide">{entry.wordCount ?? 'N/A'} words</span>
+              <span className="tracking-wide">Published {entry.createdAt ? new Date(entry.createdAt).toLocaleDateString() : 'Invalid Date'}</span>
             </div>
           </footer>
         </article>
@@ -220,15 +221,15 @@ const Entry = () => {
               <div className="space-y-3 text-sm font-inter">
                 <div className="flex justify-between">
                   <span className="text-soft-gray tracking-wide">Reading time:</span>
-                  <span className="text-muted-brown font-medium">{entry.readTime}</span>
+                  <span className="text-muted-brown font-medium">{entry.readTime ?? 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-soft-gray tracking-wide">Word count:</span>
-                  <span className="text-muted-brown font-medium">{entry.wordCount}</span>
+                  <span className="text-muted-brown font-medium">{entry.wordCount ?? 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-soft-gray tracking-wide">Mood:</span>
-                  <span className="text-muted-brown font-medium">{entry.mood}</span>
+                  <span className="text-muted-brown font-medium">{entry.mood ?? 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-soft-gray tracking-wide">Topics:</span>

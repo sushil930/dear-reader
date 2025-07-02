@@ -28,7 +28,7 @@ const App = () => (
           <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
           <Route path="/entries" element={<PrivateRoute><Entries /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/:lang/:slug" element={<PrivateRoute><Entry /></PrivateRoute>} />
+          <Route path="/entry/:slug" element={<PrivateRoute><Entry /></PrivateRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

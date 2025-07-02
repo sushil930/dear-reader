@@ -2,6 +2,7 @@
 import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
+import { IDraft, IEntry } from '@/context/AuthContext';
 import { Card, Input, Textarea, Button, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Badge } from '@/components/ui';
 import { Image as ImageComponent, Save, Smile, Tag, Eye, Send } from 'lucide-react';
 
@@ -20,10 +21,11 @@ interface EditorViewProps {
   removeTag: (tagToRemove: string) => void;
   excerpt: string;
   setExcerpt: Dispatch<SetStateAction<string>>;
-  isPreview: boolean; // Added isPreview
+  isPreview: boolean;
   setIsPreview: Dispatch<SetStateAction<boolean>>;
   handleSaveDraft: () => Promise<void>;
   handlePublish: () => Promise<void>;
+  handleImageUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>; // Add this
 }
 
 interface PreviewViewProps {
@@ -34,7 +36,7 @@ interface PreviewViewProps {
   mood: string;
 }
 
-const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, isPreview, setIsPreview, handleSaveDraft, handlePublish }: EditorViewProps) => (
+const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, isPreview, setIsPreview, handleSaveDraft, handlePublish, handleImageUpload }: EditorViewProps) => (
 
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
     {/* Main Editor */}
@@ -72,13 +74,20 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10">
+            <input
+              type="file"
+              accept="image/*"
+              id="image-upload"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+            <Button
+              variant="outline"
+              className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10"
+              onClick={() => document.getElementById('image-upload')?.click()}
+            >
               <ImageComponent className="w-4 h-4 mr-2" />
               Add Image
-            </Button>
-            <Button variant="outline" className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10">
-              <Save className="w-4 h-4 mr-2" />
-              Auto-save: On
             </Button>
           </div>
         </div>
@@ -232,7 +241,7 @@ const PreviewView = memo(({ title, content, tags, entryDate, mood }: PreviewView
 ));
 
 const WriteEditor = () => {
-  const { user, token } = useAuth();
+  const { user, token, addDraftToUser, addEntryToUser } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [mood, setMood] = useState('');
@@ -259,12 +268,41 @@ const WriteEditor = () => {
     setTags(prev => prev.filter(tag => tag !== tagToRemove));
   }, []);
 
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      // Assuming you have an API endpoint for image uploads
+      const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const imageUrl = response.data.imageUrl; // Adjust based on your backend response
+      const imageMarkdown = `\n![${file.name}](${imageUrl})\n`;
+
+      // Insert image markdown into content at cursor position or end
+      setContent(prevContent => prevContent + imageMarkdown);
+      alert('Image uploaded and added to content!');
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      alert('Failed to upload image.');
+    }
+  };
+
+
   const handleSaveDraft = async () => {
     if (!user || !token) {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/drafts', {
+      const response = await axios.post<IDraft>('http://localhost:5000/api/drafts', {
         title,
         content,
         mood,
@@ -274,6 +312,7 @@ const WriteEditor = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      addDraftToUser(response.data); // Add the newly created draft to the user's drafts in AuthContext
       alert('Draft saved successfully!');
     } catch (error) {
       alert('Failed to save draft.');
@@ -285,7 +324,7 @@ const WriteEditor = () => {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/entries', {
+      const response = await axios.post<IEntry>('http://localhost:5000/api/entries', {
         title,
         content,
         mood,
@@ -296,6 +335,7 @@ const WriteEditor = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      addEntryToUser(response.data); // Add the newly created entry to the user's entries in AuthContext
       alert('Entry published successfully!');
       // Clear form
       setTitle('');
@@ -348,7 +388,8 @@ const WriteEditor = () => {
           setIsPreview={setIsPreview}
           handleSaveDraft={handleSaveDraft}
           handlePublish={handlePublish}
-          isPreview={isPreview} // Pass isPreview prop
+          handleImageUpload={handleImageUpload} // Pass handleImageUpload prop
+          isPreview={isPreview}
         />
       }
     </div>

@@ -1,13 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-
-// Debounce utility function
-const debounce = (func: Function, delay: number) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), delay);
-  };
-};
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,53 +60,31 @@ const ProfileSettings = () => {
     }
   }, [user]);
 
-  // Debounced save function for preferences and notifications
-  const debouncedSave = useCallback(
-    debounce(async (data: Partial<any>) => {
-      try {
-        await updateUser(data);
-        console.log('Autosaved settings successfully!');
-      } catch (error) {
-        console.error('Failed to autosave settings:', error);
-      }
-    }, 1000), // 1-second debounce delay
-    [updateUser]
-  );
-
-  // Effect to trigger autosave when preferences or notifications change
-  useEffect(() => {
-    if (user) {
-      debouncedSave({
-        defaultMood: preferences.defaultMood,
-        autoSave: preferences.autoSave,
-        publicProfile: preferences.publicProfile,
-        showReadingTime: preferences.showReadingTime,
-        allowComments: preferences.allowComments,
-        emailNotifications: notifications.emailNotifications,
-        commentNotifications: notifications.commentNotifications,
-        likeNotifications: notifications.likeNotifications,
-        weeklyDigest: notifications.weeklyDigest,
-      });
-    }
-  }, [preferences, notifications, user, debouncedSave]);
-
-  const handleSaveProfile = async () => {
-    if (!user) return; // Should not happen if component is protected
-
-      const updatedData = {
-        name: profileData.displayName,
-        email: profileData.email,
-        bio: profileData.bio,
-        location: profileData.location,
-        website: profileData.website,
-      };
-
+  // New save handler for all settings
+  const handleSaveAllSettings = async () => {
+    if (!user) return;
+    const updatedData = {
+      name: profileData.displayName,
+      email: profileData.email,
+      bio: profileData.bio,
+      location: profileData.location,
+      website: profileData.website,
+      defaultMood: preferences.defaultMood,
+      autoSave: preferences.autoSave,
+      publicProfile: preferences.publicProfile,
+      showReadingTime: preferences.showReadingTime,
+      allowComments: preferences.allowComments,
+      emailNotifications: notifications.emailNotifications,
+      commentNotifications: notifications.commentNotifications,
+      likeNotifications: notifications.likeNotifications,
+      weeklyDigest: notifications.weeklyDigest,
+    };
     try {
       await updateUser(updatedData);
-      // Optionally, show a success message to the user
+      // Optionally, show a success message
     } catch (error) {
-      console.error('Failed to save profile settings:', error);
-      // Optionally, show an error message to the user
+      console.error('Failed to save settings:', error);
+      // Optionally, show an error message
     }
   };
 
@@ -142,7 +111,6 @@ const ProfileSettings = () => {
           <User className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Profile Information</h3>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
@@ -154,7 +122,6 @@ const ProfileSettings = () => {
               className="bg-cream/50 border-2 border-muted-brown/30 font-garamond focus:border-ink-blue"
             />
           </div>
-
           <div>
             <label className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
               Email Address
@@ -166,7 +133,6 @@ const ProfileSettings = () => {
               className="bg-cream/50 border-2 border-muted-brown/30 font-garamond focus:border-ink-blue"
             />
           </div>
-
           <div>
             <label className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
               Location
@@ -177,7 +143,6 @@ const ProfileSettings = () => {
               className="bg-cream/50 border-2 border-muted-brown/30 font-garamond focus:border-ink-blue"
             />
           </div>
-
           <div>
             <label className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
               Website
@@ -188,7 +153,6 @@ const ProfileSettings = () => {
               className="bg-cream/50 border-2 border-muted-brown/30 font-garamond focus:border-ink-blue"
             />
           </div>
-
           <div className="md:col-span-2">
             <label className="block font-garamond text-lg text-ink-blue mb-2 font-medium">
               Bio
@@ -201,12 +165,6 @@ const ProfileSettings = () => {
             />
           </div>
         </div>
-
-        <div className="mt-6">
-          <Button onClick={handleSaveProfile} className="vintage-button text-cream font-garamond">
-            Save Profile Changes
-          </Button>
-        </div>
       </Card>
 
       {/* Writing Preferences */}
@@ -215,7 +173,6 @@ const ProfileSettings = () => {
           <Palette className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Writing Preferences</h3>
         </div>
-
         <div className="space-y-6">
           <div>
             <label className="block font-garamond text-lg text-ink-blue mb-3 font-medium">
@@ -234,7 +191,6 @@ const ProfileSettings = () => {
               </SelectContent>
             </Select>
           </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-garamond text-lg text-ink-blue font-medium">Auto-save drafts</h4>
@@ -245,7 +201,6 @@ const ProfileSettings = () => {
               onCheckedChange={(checked) => setPreferences(prev => ({...prev, autoSave: checked}))}
             />
           </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-garamond text-lg text-ink-blue font-medium">Show reading time</h4>
@@ -265,7 +220,6 @@ const ProfileSettings = () => {
           <Globe className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Privacy & Sharing</h3>
         </div>
-
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -277,7 +231,6 @@ const ProfileSettings = () => {
               onCheckedChange={(checked) => setPreferences(prev => ({...prev, publicProfile: checked}))}
             />
           </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-garamond text-lg text-ink-blue font-medium">Allow comments</h4>
@@ -297,7 +250,6 @@ const ProfileSettings = () => {
           <Bell className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Notifications</h3>
         </div>
-
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -309,7 +261,6 @@ const ProfileSettings = () => {
               onCheckedChange={(checked) => setNotifications(prev => ({...prev, emailNotifications: checked}))}
             />
           </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-garamond text-lg text-ink-blue font-medium">Comment notifications</h4>
@@ -320,7 +271,6 @@ const ProfileSettings = () => {
               onCheckedChange={(checked) => setNotifications(prev => ({...prev, commentNotifications: checked}))}
             />
           </div>
-
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-garamond text-lg text-ink-blue font-medium">Weekly digest</h4>
@@ -340,7 +290,6 @@ const ProfileSettings = () => {
           <Shield className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Security</h3>
         </div>
-
         <div className="space-y-4">
           <Button variant="outline" className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10 font-garamond">
             Change Password
@@ -358,11 +307,9 @@ const ProfileSettings = () => {
           <Download className="w-6 h-6 text-ink-blue" />
           <h3 className="text-2xl font-garamond font-bold text-ink-blue">Export Data</h3>
         </div>
-
         <p className="text-muted-brown font-garamond mb-6">
           Download all your diary entries and data in various formats.
         </p>
-
         <div className="flex flex-wrap gap-4">
           <Button onClick={handleExportData} variant="outline" className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10 font-garamond">
             Export as PDF
@@ -375,6 +322,13 @@ const ProfileSettings = () => {
           </Button>
         </div>
       </Card>
+
+      {/* Save Changes Button at the bottom */}
+      <div className="flex justify-end mt-8">
+        <Button onClick={handleSaveAllSettings} className="vintage-button text-cream font-garamond px-8 py-3 text-lg shadow-lg">
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 };

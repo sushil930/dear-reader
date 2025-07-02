@@ -2,21 +2,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { loadAllEntries, DiaryEntry } from "@/data/allentries";
 import { useState, useEffect } from 'react';
+import { useAuth, IEntry } from "@/context/AuthContext";
 
 const RecentEntries = () => {
   const navigate = useNavigate();
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const { user } = useAuth();
+  const [entries, setEntries] = useState<IEntry[]>([]);
 
   useEffect(() => {
-    const fetchEntries = async () => {
-      const allEntries = await loadAllEntries();
-      // Limit to the 3 most recent entries
-      setEntries(allEntries.slice(0, 3));
-    };
-    fetchEntries();
-  }, []);
+    if (user?.entries) {
+      // Sort entries by date in descending order and limit to the 3 most recent
+      const sortedAndLimitedEntries = [...user.entries]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3);
+      setEntries(sortedAndLimitedEntries);
+    }
+  }, [user]);
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -79,11 +81,11 @@ const RecentEntries = () => {
                 </div>
                 
                 <h3 className="text-2xl font-garamond font-medium text-ink-blue leading-tight">
-                  {entry.title['en'] || ''}
+                  {entry.title}
                 </h3>
                 
                 <p className="text-center text-soft-gray font-garamond leading-relaxed text-base text-justify flex-grow">
-                  {entry.excerpt['en'] || ''}
+                  {entry.excerpt}
                 </p>
                 
                 <div className="flex items-center justify-between pt-4 border-t border-muted-brown/10">

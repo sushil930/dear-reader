@@ -1,10 +1,11 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
-interface IEntry {
+export interface IEntry {
   id: string;
   title: string;
   content: string;
+  slug: string;
   date: string; // Or Date if you parse it
   mood?: string;
   readTime?: number;
@@ -16,7 +17,7 @@ interface IEntry {
   updatedAt: string; // Or Date
 }
 
-interface IDraft {
+export interface IDraft {
   id: string;
   title: string;
   content: string;
@@ -60,6 +61,8 @@ interface AuthContextType {
   login: (token: string, userData: IUser) => void;
   logout: () => void;
   updateUser: (userData: Partial<IUser>) => Promise<void>;
+  addDraftToUser: (draft: IDraft) => void;
+  addEntryToUser: (entry: IEntry) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -127,8 +130,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const addDraftToUser = (draft: IDraft) => {
+    setUser(prevUser => {
+      if (prevUser) {
+        return { ...prevUser, drafts: [...prevUser.drafts, draft] };
+      }
+      return prevUser;
+    });
+  };
+
+  const addEntryToUser = (entry: IEntry) => {
+    setUser(prevUser => {
+      if (prevUser) {
+        return { ...prevUser, entries: [...prevUser.entries, entry] };
+      }
+      return prevUser;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser, addDraftToUser, addEntryToUser }}>
       {children}
     </AuthContext.Provider>
   );

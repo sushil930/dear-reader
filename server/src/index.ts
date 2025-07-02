@@ -14,6 +14,7 @@ export const prisma = new PrismaClient().$extends(withAccelerate());
 // Middleware
 app.use(express.json()); // For parsing application/json
 app.use(cookieParser()); // For parsing cookies
+app.use('/uploads', express.static('uploads')); // Serve static files from the 'uploads' directory
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Allow requests from your frontend
   credentials: true, // Allow cookies to be sent
@@ -27,12 +28,12 @@ app.get('/', (req, res) => {
 import authRoutes from './routes/authRoutes.js';
 import entryRoutes from './routes/entryRoutes.js';
 import draftRoutes from './routes/draftRoutes.js';
-
-
+import imageUploadRoutes from './routes/imageUploadRoutes.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/entries', entryRoutes);
 app.use('/api/drafts', draftRoutes);
+app.use('/api/upload', imageUploadRoutes);
 
 // Start the server
 app.listen(PORT, () => {
