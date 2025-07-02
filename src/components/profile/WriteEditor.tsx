@@ -1,10 +1,33 @@
-
 import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import { IDraft, IEntry } from '@/context/AuthContext';
 import { Card, Input, Textarea, Button, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Badge } from '@/components/ui';
-import { Image as ImageComponent, Save, Smile, Tag, Eye, Send, Bold, Italic, Underline, List, Quote, Heading1, Heading2, Link } from 'lucide-react';
+import { 
+  Image as ImageComponent, 
+  Save, 
+  Smile, 
+  Tag, 
+  Eye, 
+  Send, 
+  Bold, 
+  Italic, 
+  Underline, 
+  List, 
+  Quote, 
+  Heading1, 
+  Heading2, 
+  Link,
+  ListOrdered,
+  Code,
+  Minus,
+  Type,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Highlighter,
+  CheckSquare
+} from 'lucide-react';
 
 interface EditorViewProps {
   title: string;
@@ -62,82 +85,182 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
               Your Story
             </label>
             
-            {/* Formatting Toolbar */}
-            <div className="flex flex-wrap gap-2 p-3 bg-cream/30 border-2 border-muted-brown/20 rounded-t-md border-b-0">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('bold')}
-              >
-                <Bold className="w-3 h-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('italic')}
-              >
-                <Italic className="w-3 h-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('underline')}
-              >
-                <Underline className="w-3 h-3" />
-              </Button>
-              <div className="w-px h-6 bg-muted-brown/20 mx-1"></div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('h1')}
-              >
-                <Heading1 className="w-3 h-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('h2')}
-              >
-                <Heading2 className="w-3 h-3" />
-              </Button>
-              <div className="w-px h-6 bg-muted-brown/20 mx-1"></div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('list')}
-              >
-                <List className="w-3 h-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('quote')}
-              >
-                <Quote className="w-3 h-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-xs border-muted-brown/30 hover:bg-muted-brown/10"
-                onClick={() => handleFormatText('link')}
-              >
-                <Link className="w-3 h-3" />
-              </Button>
+            {/* Enhanced Formatting Toolbar */}
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-3 shadow-sm">
+              {/* Text Formatting Row */}
+              <div className="flex flex-wrap items-center gap-1 mb-2">
+                <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('bold')}
+                  >
+                    <Bold className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('italic')}
+                  >
+                    <Italic className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('underline')}
+                  >
+                    <Underline className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-yellow-100 hover:text-yellow-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('highlight')}
+                  >
+                    <Highlighter className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Headings */}
+                <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-purple-100 hover:text-purple-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('h1')}
+                  >
+                    <Heading1 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-purple-100 hover:text-purple-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('h2')}
+                  >
+                    <Heading2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-purple-100 hover:text-purple-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('h3')}
+                  >
+                    <Type className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Lists */}
+                <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('list')}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('ordered-list')}
+                  >
+                    <ListOrdered className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('todo')}
+                  >
+                    <CheckSquare className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Text Alignment */}
+                <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('align-left')}
+                  >
+                    <AlignLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('align-center')}
+                  >
+                    <AlignCenter className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('align-right')}
+                  >
+                    <AlignRight className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Special Elements */}
+                <div className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-indigo-100 hover:text-indigo-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('quote')}
+                  >
+                    <Quote className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('code')}
+                  >
+                    <Code className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('divider')}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-teal-100 hover:text-teal-700 rounded-md transition-all duration-200"
+                    onClick={() => handleFormatText('link')}
+                  >
+                    <Link className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <Textarea
@@ -374,6 +497,10 @@ const WriteEditor = () => {
         formattedText = `<u>${selectedText}</u>`;
         newCursorPos = selectedText ? start + formattedText.length : start + 3;
         break;
+      case 'highlight':
+        formattedText = `==${selectedText}==`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
       case 'h1':
         formattedText = `# ${selectedText}`;
         newCursorPos = selectedText ? start + formattedText.length : start + 2;
@@ -382,17 +509,49 @@ const WriteEditor = () => {
         formattedText = `## ${selectedText}`;
         newCursorPos = selectedText ? start + formattedText.length : start + 3;
         break;
+      case 'h3':
+        formattedText = `### ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 4;
+        break;
       case 'list':
         formattedText = `- ${selectedText}`;
         newCursorPos = selectedText ? start + formattedText.length : start + 2;
+        break;
+      case 'ordered-list':
+        formattedText = `1. ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 3;
+        break;
+      case 'todo':
+        formattedText = `- [ ] ${selectedText}`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 6;
         break;
       case 'quote':
         formattedText = `> ${selectedText}`;
         newCursorPos = selectedText ? start + formattedText.length : start + 2;
         break;
+      case 'code':
+        formattedText = `\`${selectedText}\``;
+        newCursorPos = selectedText ? start + formattedText.length : start + 1;
+        break;
+      case 'divider':
+        formattedText = `\n---\n`;
+        newCursorPos = start + formattedText.length;
+        break;
       case 'link':
         formattedText = `[${selectedText || 'link text'}](url)`;
         newCursorPos = selectedText ? start + formattedText.length - 5 : start + 1;
+        break;
+      case 'align-left':
+        formattedText = `<div align="left">${selectedText}</div>`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 17;
+        break;
+      case 'align-center':
+        formattedText = `<div align="center">${selectedText}</div>`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 19;
+        break;
+      case 'align-right':
+        formattedText = `<div align="right">${selectedText}</div>`;
+        newCursorPos = selectedText ? start + formattedText.length : start + 18;
         break;
       default:
         return;
