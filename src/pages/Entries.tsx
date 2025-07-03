@@ -6,6 +6,7 @@ import { useAuth, IEntry } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import VintageLoading from "@/components/ui/vintage-loading";
 
 const Entries = () => {
   const navigate = useNavigate();
@@ -42,7 +43,11 @@ const Entries = () => {
   }, [selectedTopic, allEntries]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-ink-blue text-xl font-garamond">Loading entries...</div>;
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <VintageLoading message="Gathering your diary entries..." size="lg" />
+      </div>
+    );
   }
 
   const getMoodColor = (mood: string) => {

@@ -7,12 +7,11 @@ import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import VintageLoading from "@/components/ui/vintage-loading";
 
 interface EntryData {
   id: string;
   slug: string;
-
-
   title: string;
   content: string;
   date: string;
@@ -29,11 +28,9 @@ interface EntryData {
 
 const Entry = () => {
   const { slug } = useParams<{ slug: string }>();
-  // const lang = 'en'; // Language feature removed
   const navigate = useNavigate();
   const [entry, setEntry] = useState<EntryData | null>(null);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchEntry = async () => {
@@ -43,8 +40,7 @@ const Entry = () => {
           withCredentials: true,
         });
         setEntry(response.data);
-    console.log("Fetched Entry Data:", response.data);
-
+        console.log("Fetched Entry Data:", response.data);
       } catch (error) {
         console.error("Error fetching entry:", error);
         setEntry(null);
@@ -56,7 +52,11 @@ const Entry = () => {
   }, [slug]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <VintageLoading message="Retrieving your diary entry..." size="lg" />
+      </div>
+    );
   }
 
   if (!entry) {
@@ -70,6 +70,7 @@ const Entry = () => {
         </div>
       </div>;
   }
+
   const getMoodColor = (mood: string) => {
     switch (mood) {
       case "Reflective":
@@ -82,6 +83,7 @@ const Entry = () => {
         return "bg-soft-gray/20 text-soft-gray border-soft-gray/30";
     }
   };
+
   return <div className="min-h-screen bg-cream relative">
       {/* Decorative elements */}
       <div className="ink-blot absolute top-20 left-20 opacity-15"></div>
