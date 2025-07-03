@@ -14,8 +14,12 @@ import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
 import WriteEditor from "./components/profile/WriteEditor";
 import WritePageLayout from "./components/WritePageLayout";
+import axios from 'axios';
 
 const queryClient = new QueryClient();
+
+// Configure axios base URL: use Vite env var in prod, fallback to localhost
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
