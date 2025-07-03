@@ -14,6 +14,7 @@ export const getAllUserEntries: RequestHandler = async (req, res) => {
 
     const entries = await prisma.entry.findMany({
       where: { authorId: userId },
+      include: { author: { select: { name: true } } },
     });
 
     // Ensure tags is always an array for each entry
@@ -34,6 +35,61 @@ export const getAllUserEntries: RequestHandler = async (req, res) => {
 // Create a new entry for the authenticated user
 // Helper function to generate a slug from a title
 // Get a single entry by slug for the authenticated user
+// Get recent entries (public)
+export const getRecentEntries: RequestHandler = async (req, res) => {
+  try {
+    const entries = await prisma.entry.findMany({
+      orderBy: { date: 'desc' },
+      take: 3,
+      include: { author: { select: { name: true } } },
+    });
+    const processed = entries.map(e => ({ ...e, tags: Array.isArray(e.tags) ? e.tags : [] }));
+    res.status(200).json(processed);
+    return;
+  } catch (error) {
+    console.error('Error fetching recent entries:', error);
+    res.status(500).json({ message: 'Failed to fetch recent entries', error: (error as Error).message });
+    return;
+  }
+};
+
+// Public route: get all entries sorted by date
+
+// Public route: fetch a single entry by slug (public)
+export const getPublicEntryBySlug: RequestHandler = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const entry = await prisma.entry.findFirst({ where: { slug }, include: { author: { select: { name: true } } } });
+    if (!entry) {
+      res.status(404).json({ message: 'Entry not found' });
+      return;
+    }
+    const processed = { ...entry, tags: Array.isArray(entry.tags) ? entry.tags : [] };
+    res.status(200).json(processed);
+    return;
+  } catch (error) {
+    console.error('Error fetching public entry:', error);
+    res.status(500).json({ message: 'Failed to fetch entry', error: (error as Error).message });
+    return;
+  }
+};
+export const getAllPublicEntries: RequestHandler = async (req, res) => {
+  try {
+    const entries = await prisma.entry.findMany({
+      orderBy: { date: 'desc' },
+      include: { author: { select: { name: true } } },
+    });
+    const processed = entries.map(e => ({ ...e, tags: Array.isArray(e.tags) ? e.tags : [] }));
+    res.status(200).json(processed);
+    return;
+  } catch (error) {
+    console.error('Error fetching all entries:', error);
+    res.status(500).json({ message: 'Failed to fetch entries', error: (error as Error).message });
+    return;
+  }
+};
+
+// Fetch a single entry by slug for the authenticated user
 export const getEntryBySlug: RequestHandler = async (req, res) => {
   try {
     // @ts-ignore
@@ -45,6 +101,7 @@ export const getEntryBySlug: RequestHandler = async (req, res) => {
     const { slug } = req.params;
     const entry = await prisma.entry.findFirst({
       where: { slug, authorId: userId },
+      include: { author: { select: { name: true } } },
     });
     if (!entry) {
       res.status(404).json({ message: 'Entry not found' });

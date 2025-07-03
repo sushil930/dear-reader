@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { User, Bell, Shield, Download, Palette, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileSettings = () => {
-  const { user, token, login, updateUser } = useAuth();
+  const navigate = useNavigate();
+  const { user, token, login, updateUser, logout } = useAuth();
 
   const [profileData, setProfileData] = useState({
     displayName: user?.name || '',
@@ -323,9 +325,28 @@ const ProfileSettings = () => {
         </div>
       </Card>
 
-      {/* Save Changes Button at the bottom */}
-      <div className="flex justify-end mt-8">
-        <Button onClick={handleSaveAllSettings} className="vintage-button text-cream font-garamond px-8 py-3 text-lg shadow-lg">
+      {/* Bottom Actions: Logout/Login and Save Changes */}
+      <div className="flex justify-between mt-8">
+        <div className="flex gap-4">
+            {user ? (
+              <Button
+                variant="outline"
+                className="border-2 border-red-600 text-red-600 hover:bg-red-100 font-garamond"
+                onClick={logout}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10 font-garamond"
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </Button>
+            )}
+          </div>
+          <Button onClick={handleSaveAllSettings} className="vintage-button text-cream font-garamond px-8 py-3 text-lg shadow-lg">
           Save Changes
         </Button>
       </div>

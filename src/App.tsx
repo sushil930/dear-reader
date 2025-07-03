@@ -27,10 +27,10 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
-          <Route path="/entries" element={<PrivateRoute><Entries /></PrivateRoute>} />
+          <Route path="/" element={<Index />} />
+          <Route path="/entries" element={<Entries />} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/entry/:slug" element={<PrivateRoute><Entry /></PrivateRoute>} />
+          <Route path="/entry/:slug" element={<Entry />} />
           <Route path="/write" element={<PrivateRoute><WritePageLayout><WriteEditor /></WritePageLayout></PrivateRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -1,8 +1,16 @@
 import { Router } from 'express';
 import { protect } from '../middleware/authMiddleware.js';
-import { getAllUserEntries, getEntryBySlug, createEntry, updateEntry, deleteEntry } from '../controllers/entryController.js';
+import { getRecentEntries } from '../controllers/entryController.js';
+import { getAllUserEntries, getAllPublicEntries, getPublicEntryBySlug, getEntryBySlug, createEntry, updateEntry, deleteEntry } from '../controllers/entryController.js';
 
 const router = Router();
+
+// Public route: get recent entries (first 3)
+router.get('/recent', getRecentEntries);
+// Public route: get all entries sorted by date
+router.get('/all', getAllPublicEntries);
+// Public route: fetch single entry by slug
+router.get('/public/:slug', getPublicEntryBySlug);
 
 
 

@@ -61,7 +61,8 @@ export const login: RequestHandler = async (req, res) => {
       include: {
         entries: {
           select: {
-            id: true, slug: true, title: true, content: true, date: true, mood: true, readTime: true, excerpt: true, tags: true, bannerImage: true, views: true, createdAt: true, updatedAt: true
+            id: true, slug: true, title: true, content: true, date: true, mood: true, readTime: true, excerpt: true, tags: true, bannerImage: true, views: true, createdAt: true, updatedAt: true,
+             author: { select: { name: true } }
           }
         },
         drafts: {
@@ -233,6 +234,7 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
             views: true,
             createdAt: true,
             updatedAt: true,
+            author: { select: { name: true } },
           },
         },
         drafts: {

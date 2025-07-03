@@ -101,7 +101,7 @@ const EntryManager = () => {
             </div>
 
             <div className="flex items-center justify-between text-sm text-muted-brown font-garamond">
-              <span>{entry.date}</span>
+              <span>{entry.date} · {entry.author?.name}</span>
               <Badge className={getMoodColor(entry.mood)}>
                 {entry.mood}
               </Badge>
@@ -130,12 +130,12 @@ const EntryManager = () => {
                   {entry.mood}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-brown font-garamond">{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))}</p>
+              <p className="text-sm text-muted-brown font-garamond">{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))} · {entry.author?.name}</p>
               <p className="text-muted-brown font-garamond mb-3 line-clamp-2">
                 {entry.excerpt}
               </p>
               <div className="flex items-center gap-6 text-sm text-muted-brown font-garamond">
-                <span>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))}</span>
+                <span>{new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(entry.date))} · {entry.author?.name}</span>
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   <span>{entry.views} views</span>

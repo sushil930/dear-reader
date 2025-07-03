@@ -15,6 +15,7 @@ export interface IEntry {
   views?: number;
   createdAt: string; // Or Date
   updatedAt: string; // Or Date
+  author?: { name: string };
 }
 
 export interface IDraft {

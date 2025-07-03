@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth, IEntry } from "@/context/AuthContext";
+import axios from 'axios';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,9 +14,25 @@ const Entries = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
   const [selectedTopic, setSelectedTopic] = useState<string>("all");
+  const [entries, setEntries] = useState<IEntry[]>([]);
 
-  const allEntries: IEntry[] = user?.entries || [];
-  console.log("All entries in Entries.tsx:", allEntries);
+  useEffect(() => {
+    if (user && user.entries) {
+      setEntries(user.entries);
+    } else {
+      const fetchEntries = async () => {
+        try {
+          const response = await axios.get('/api/entries/all');
+          setEntries(response.data);
+        } catch (error) {
+          console.error('Error fetching all entries:', error);
+        }
+      };
+      fetchEntries();
+    }
+  }, [user]);
+
+  
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -28,19 +45,19 @@ const Entries = () => {
   // Get all unique topics from entries
   const allTopics = useMemo(() => {
     const topics = new Set<string>();
-    allEntries.forEach(entry => {
+    entries.forEach(entry => {
       entry.tags.forEach(tag => topics.add(tag));
     });
     return Array.from(topics).sort();
-  }, [allEntries]);
+  }, [entries]);
 
   // Filter entries based on selected topic
   const filteredEntries = useMemo(() => {
     if (selectedTopic === "all") {
-      return allEntries;
+      return entries;
     }
-    return allEntries.filter(entry => entry.tags.includes(selectedTopic));
-  }, [selectedTopic, allEntries]);
+    return entries.filter(entry => entry.tags.includes(selectedTopic));
+  }, [selectedTopic, entries]);
 
   if (loading) {
     return (
@@ -173,7 +190,7 @@ const Entries = () => {
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-inter text-muted-brown">
-                    {entry.date}
+                    {entry.date} · {entry.author?.name}
                   </p>
                   <Badge variant="secondary" className={getMoodColor(entry.mood)}>
                     {entry.mood}

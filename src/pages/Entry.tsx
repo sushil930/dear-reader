@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import VintageLoading from "@/components/ui/vintage-loading";
+import { useAuth } from '@/context/AuthContext';
 
 interface EntryData {
   id: string;
@@ -23,10 +24,12 @@ interface EntryData {
   createdAt: string;
   updatedAt: string;
   authorId: string;
+  author?: { name: string };
   wordCount?: number;
 }
 
 const Entry = () => {
+  const { user } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [entry, setEntry] = useState<EntryData | null>(null);
@@ -34,16 +37,31 @@ const Entry = () => {
 
   useEffect(() => {
     const fetchEntry = async () => {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
-        const response = await axios.get(`/api/entries/${slug}`, {
-          withCredentials: true,
-        });
-        setEntry(response.data);
-        console.log("Fetched Entry Data:", response.data);
-      } catch (error) {
-        console.error("Error fetching entry:", error);
-        setEntry(null);
+        // Try protected route first
+        const privateRes = await axios.get(`/api/entries/${slug}`, { withCredentials: true });
+        setEntry(privateRes.data);
+        console.log("Fetched private entry:", privateRes.data);
+      } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          // Fallback to public route
+          try {
+            const publicRes = await axios.get(`/api/entries/public/${slug}`);
+            setEntry(publicRes.data);
+            console.log("Fetched public entry:", publicRes.data);
+          } catch (pubError) {
+            console.error("Error fetching public entry:", pubError);
+            setEntry(null);
+          }
+        } else {
+          console.error("Error fetching entry:", error);
+          setEntry(null);
+        }
       } finally {
         setLoading(false);
       }
@@ -93,7 +111,7 @@ const Entry = () => {
       <header className="border-b border-muted-brown/20 bg-cream/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Button 
-            onClick={() => navigate('/entries')} 
+            onClick={() => user ? navigate('/profile') : navigate('/entries')} 
             variant="ghost" 
             className="text-muted-brown hover:text-ink-blue hover:bg-sepia/20 font-inter"
           >
@@ -127,6 +145,7 @@ const Entry = () => {
           <header className="space-y-8 pb-10 border-b border-muted-brown/15">
             <div className="flex items-center gap-6 text-sm font-inter text-muted-brown">
               <time dateTime={entry.createdAt} className="tracking-wide">{entry.date}</time>
+               <span className="tracking-wide">by {entry.author?.name}</span>
               <Badge variant="outline" className={`${getMoodColor(entry.mood)} px-4 py-1`}>
                 {entry.mood}
               </Badge>
