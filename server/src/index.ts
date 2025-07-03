@@ -1,15 +1,14 @@
 import 'dotenv/config';
 import express from 'express';
-import { PrismaClient } from '@prisma/client/edge';
-import { withAccelerate } from '@prisma/extension-accelerate';
+import { PrismaClient } from '@prisma/client';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize Prisma Client with Accelerate
-export const prisma = new PrismaClient().$extends(withAccelerate());
+// Initialize Prisma Client
+export const prisma = new PrismaClient();
 
 // Middleware
 app.use(express.json()); // For parsing application/json
