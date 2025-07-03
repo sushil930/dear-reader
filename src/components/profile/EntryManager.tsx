@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Grid, List, Eye, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const EntryManager = () => {
   const [viewMode, setViewMode] = useState('grid');
@@ -15,6 +16,7 @@ const EntryManager = () => {
   const [filterMood, setFilterMood] = useState('all');
 
   const { user } = useAuth();
+  const navigate = useNavigate();
   const entries = user?.entries ? user.entries : [];
 
   const filteredEntries = entries.filter(entry =>
@@ -53,7 +55,7 @@ const EntryManager = () => {
   const GridView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {sortedEntries.map((entry) => (
-        <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300">
+        <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => navigate(`/entry/${entry.slug}`)}>
           <div className="flex justify-between items-start mb-4">
             <Badge variant="default" className="font-garamond">
               Published
@@ -118,7 +120,7 @@ const EntryManager = () => {
   const ListView = () => (
     <div className="space-y-4">
       {sortedEntries.map((entry) => (
-        <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-md transition-all duration-300">
+        <Card key={entry.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-md transition-all duration-300 cursor-pointer" onClick={() => navigate(`/entry/${entry.slug}`)}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-2">

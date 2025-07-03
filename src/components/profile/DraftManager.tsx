@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const DraftManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { user } = useAuth();
+  const { user, token, setUser, addEntryToUser } = useAuth();
   const navigate = useNavigate();
   const drafts = user?.drafts ? user.drafts : [];
 
@@ -25,14 +26,62 @@ const DraftManager = () => {
     navigate(`/write?draftId=${draftId}`);
   };
 
-  const handlePublishDraft = (draftId: string) => {
-    console.log('Publish draft:', draftId);
-    // TODO: Implement publish draft logic
+  const handlePublishDraft = async (draftId: string) => {
+    if (!user || !token) {
+      console.error('User not authenticated.');
+      return;
+    }
+    try {
+      const response = await axios.post(`http://localhost:5000/api/drafts/publish/${draftId}`, {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const newEntry = response.data;
+
+      // Remove draft from user's drafts
+      setUser(prevUser => {
+        if (prevUser) {
+          return { ...prevUser, drafts: prevUser.drafts.filter(draft => draft.id !== draftId) };
+        }
+        return prevUser;
+      });
+
+      // Add new entry to user's entries
+      addEntryToUser(newEntry);
+
+      console.log('Draft published successfully:', newEntry);
+      // Optionally navigate to the new entry page
+      navigate(`/entry/${newEntry.slug}`);
+    } catch (error) {
+      console.error('Failed to publish draft:', error);
+    }
   };
 
-  const handleDeleteDraft = (draftId: string) => {
-    console.log('Delete draft:', draftId);
-    // TODO: Implement delete draft logic
+  const handleDeleteDraft = async (draftId: string) => {
+    if (!user || !token) {
+      console.error('User not authenticated.');
+      return;
+    }
+    try {
+      await axios.delete(`http://localhost:5000/api/drafts/${draftId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Update user's drafts in AuthContext after successful deletion
+      setUser(prevUser => {
+        if (prevUser) {
+          return { ...prevUser, drafts: prevUser.drafts.filter(draft => draft.id !== draftId) };
+        }
+        return prevUser;
+      });
+      console.log('Draft deleted successfully:', draftId);
+    } catch (error) {
+      console.error('Failed to delete draft:', error);
+    }
   };
 
   const formatRelativeTime = (dateString: string) => {

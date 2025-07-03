@@ -33,6 +33,34 @@ export const getAllUserEntries: RequestHandler = async (req, res) => {
 
 // Create a new entry for the authenticated user
 // Helper function to generate a slug from a title
+// Get a single entry by slug for the authenticated user
+export const getEntryBySlug: RequestHandler = async (req, res) => {
+  try {
+    // @ts-ignore
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized: User ID not found in request' });
+      return;
+    }
+    const { slug } = req.params;
+    const entry = await prisma.entry.findFirst({
+      where: { slug, authorId: userId },
+    });
+    if (!entry) {
+      res.status(404).json({ message: 'Entry not found' });
+      return;
+    }
+    // Ensure tags is always an array
+    const processedEntry = { ...entry, tags: Array.isArray(entry.tags) ? entry.tags : [] };
+    res.status(200).json(processedEntry);
+    return;
+  } catch (error) {
+    console.error('Error fetching entry:', error);
+    res.status(500).json({ message: 'Failed to fetch entry', error: (error as Error).message });
+    return;
+  }
+};
+
 const generateSlug = (title: string) => {
   return title
     .toLowerCase()

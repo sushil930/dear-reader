@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { protect } from '../middleware/authMiddleware.js';
-import { getAllUserEntries, createEntry, updateEntry, deleteEntry } from '../controllers/entryController.js';
+import { getAllUserEntries, getEntryBySlug, createEntry, updateEntry, deleteEntry } from '../controllers/entryController.js';
 
 const router = Router();
 
@@ -11,6 +11,8 @@ router.use(protect);
 
 // GET all entries for the authenticated user
 router.get('/user', getAllUserEntries);
+// GET a single entry by slug
+router.get('/:slug', getEntryBySlug);
 
 // POST create a new entry
 router.post('/', createEntry);
