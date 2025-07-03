@@ -2,30 +2,57 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Edit2, Calendar, BookOpen } from 'lucide-react';
+import { Edit2, Calendar, BookOpen, Camera } from 'lucide-react';
+import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
 const ProfileHeader = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, token } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [bio, setBio] = useState(user?.bio || '');
+  const [profileImage, setProfileImage] = useState(user?.profileImage || '');
 
   // Update name when user data changes (e.g., after login)
   useEffect(() => {
     if (user) {
       setName(user.name || '');
       setBio(user.bio || '');
+      setProfileImage(user.profileImage || '');
     }
   }, [user]);
 
   const handleSave = async () => {
     try {
-      await updateUser({ name, bio });
+      await updateUser({ name, bio, profileImage });
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save profile changes:', error);
       // Optionally, show an error message to the user
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !token) return;
+
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    try {
+      const response = await axios.post(`http://localhost:5000/api/users/${user.id}/upload-profile-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const newProfileImageUrl = response.data.profileImage;
+      setProfileImage(newProfileImageUrl);
+      updateUser({ ...user, profileImage: newProfileImageUrl });
+      alert('Profile image updated successfully!');
+    } catch (error) {
+      console.error('Failed to upload profile image:', error);
+      alert('Failed to upload profile image.');
     }
   };
 
@@ -45,15 +72,23 @@ const ProfileHeader = () => {
         <div className="relative">
           <div className="w-32 h-32 rounded-full border-4 border-muted-brown/30 p-1 bg-cream">
             <Avatar className="w-full h-full">
-              <AvatarImage src="/placeholder.svg" alt="Profile" />
+              <AvatarImage src={profileImage || "/placeholder.svg"} alt="Profile" />
               <AvatarFallback className="text-2xl font-garamond text-ink-blue bg-cream">{name ? name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
             </Avatar>
           </div>
+          <input
+            type="file"
+            accept="image/*"
+            id="profile-image-upload"
+            className="hidden"
+            onChange={handleImageUpload}
+          />
           <Button
             size="sm"
             className="absolute -bottom-2 -right-2 rounded-full w-10 h-10 bg-ink-blue hover:bg-forest-green"
+            onClick={() => document.getElementById('profile-image-upload')?.click()}
           >
-            <Edit2 className="w-4 h-4" />
+            <Camera className="w-4 h-4" />
           </Button>
         </div>
 

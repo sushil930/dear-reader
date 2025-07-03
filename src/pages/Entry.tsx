@@ -11,8 +11,8 @@ import axios from 'axios';
 interface EntryData {
   id: string;
   slug: string;
-  lang: string;
-  translationGroup: string;
+
+
   title: string;
   content: string;
   date: string;
@@ -29,29 +29,21 @@ interface EntryData {
 
 const Entry = () => {
   const { slug } = useParams<{ slug: string }>();
-  const lang = 'en'; // Hardcode language to 'en' as it's not in the URL path anymore
+  // const lang = 'en'; // Language feature removed
   const navigate = useNavigate();
   const [entry, setEntry] = useState<EntryData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [availableLanguages, setAvailableLanguages] = useState<EntryData[]>([]);
+
 
   useEffect(() => {
     const fetchEntry = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`/api/entries/${lang}/${slug}`, { // lang is now hardcoded to 'en'
+        const response = await axios.get(`/api/entries/${slug}`, {
           withCredentials: true,
         });
         setEntry(response.data);
     console.log("Fetched Entry Data:", response.data);
-
-        // Fetch all entries in the same translation group
-        if (response.data.translationGroup) {
-          const groupResponse = await axios.get(`/api/entries/group/${response.data.translationGroup}`, {
-            withCredentials: true,
-          });
-          setAvailableLanguages(groupResponse.data);
-        }
 
       } catch (error) {
         console.error("Error fetching entry:", error);
@@ -61,7 +53,7 @@ const Entry = () => {
       }
     };
     fetchEntry();
-  }, [lang, slug]);
+  }, [slug]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -181,26 +173,6 @@ const Entry = () => {
                 </Badge>
               ))}
             </div>
-
-            {/* Language Selector */}
-            {availableLanguages.length > 1 && (
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-inter text-soft-gray">Read in:</span>
-                <div className="flex space-x-2">
-                  {availableLanguages.map((langEntry) => (
-                    <Button
-                      key={langEntry.lang}
-                      onClick={() => navigate(`/${langEntry.lang}/${langEntry.slug}`)}
-                      variant={langEntry.lang === lang ? 'default' : 'outline'}
-                      size="sm"
-                      className="border-muted-brown text-muted-brown hover:bg-sepia/20"
-                    >
-                      {langEntry.lang.toUpperCase()}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Entry Stats */}
             <div className="flex items-center gap-8 text-sm font-inter text-soft-gray">

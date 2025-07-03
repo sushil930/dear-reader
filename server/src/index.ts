@@ -13,6 +13,7 @@ export const prisma = new PrismaClient().$extends(withAccelerate());
 
 // Middleware
 app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use(cookieParser()); // For parsing cookies
 app.use('/uploads', express.static('uploads')); // Serve static files from the 'uploads' directory
 app.use(cors({
@@ -29,11 +30,13 @@ import authRoutes from './routes/authRoutes.js';
 import entryRoutes from './routes/entryRoutes.js';
 import draftRoutes from './routes/draftRoutes.js';
 import imageUploadRoutes from './routes/imageUploadRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/entries', entryRoutes);
 app.use('/api/drafts', draftRoutes);
 app.use('/api/upload', imageUploadRoutes);
+app.use('/api/users', userRoutes);
 
 // Start the server
 app.listen(PORT, () => {

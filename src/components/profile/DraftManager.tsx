@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,21 +10,29 @@ import { useAuth } from '../../context/AuthContext';
 const DraftManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { user } = useAuth();
+  const navigate = useNavigate();
   const drafts = user?.drafts ? user.drafts : [];
+
+  const filteredDrafts = drafts.filter(draft =>
+    draft.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    draft.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    draft.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (draft.tags && draft.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
+  );
 
   const handleContinueWriting = (draftId: string) => {
     console.log('Continue writing draft:', draftId);
-    // Navigate to editor with draft loaded
+    navigate(`/write?draftId=${draftId}`);
   };
 
   const handlePublishDraft = (draftId: string) => {
     console.log('Publish draft:', draftId);
-    // Publish draft
+    // TODO: Implement publish draft logic
   };
 
   const handleDeleteDraft = (draftId: string) => {
     console.log('Delete draft:', draftId);
-    // Delete draft
+    // TODO: Implement delete draft logic
   };
 
   const formatRelativeTime = (dateString: string) => {
@@ -65,7 +74,7 @@ const DraftManager = () => {
 
       {/* Drafts List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {drafts.map((draft) => (
+        {filteredDrafts.map((draft) => (
           <Card key={draft.id} className="vintage-card p-6 border-2 border-muted-brown/20 hover:shadow-lg transition-all duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -140,7 +149,7 @@ const DraftManager = () => {
       </div>
 
       {/* Empty State */}
-      {drafts.length === 0 && (
+      {filteredDrafts.length === 0 && searchTerm === '' && (
         <div className="text-center py-12">
           <FileText className="w-16 h-16 text-muted-brown/50 mx-auto mb-4" />
           <h3 className="text-xl font-garamond font-bold text-ink-blue mb-2">No drafts yet</h3>
@@ -157,18 +166,18 @@ const DraftManager = () => {
       <Card className="vintage-card p-6 border-2 border-muted-brown/20 bg-cream/30">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div>
-            <div className="text-3xl font-garamond font-bold text-ink-blue mb-2">{drafts.length}</div>
+            <div className="text-3xl font-garamond font-bold text-ink-blue mb-2">{filteredDrafts.length}</div>
             <div className="text-sm font-garamond text-muted-brown">Total Drafts</div>
           </div>
           <div>
             <div className="text-3xl font-garamond font-bold text-ink-blue mb-2">
-              {drafts.reduce((sum, draft) => sum + draft.wordCount, 0)}
+              {filteredDrafts.reduce((sum, draft) => sum + draft.wordCount, 0)}
             </div>
             <div className="text-sm font-garamond text-muted-brown">Total Words</div>
           </div>
           <div>
             <div className="text-3xl font-garamond font-bold text-ink-blue mb-2">
-              {drafts.filter(draft => {
+              {filteredDrafts.filter(draft => {
                 const modified = new Date(draft.lastModified);
                 const today = new Date();
                 return modified.toDateString() === today.toDateString();

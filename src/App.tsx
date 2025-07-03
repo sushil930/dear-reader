@@ -12,6 +12,8 @@ import Register from "./pages/Register";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
+import WriteEditor from "./components/profile/WriteEditor";
+import WritePageLayout from "./components/WritePageLayout";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,7 @@ const App = () => (
           <Route path="/entries" element={<PrivateRoute><Entries /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/entry/:slug" element={<PrivateRoute><Entry /></PrivateRoute>} />
+          <Route path="/write" element={<PrivateRoute><WritePageLayout><WriteEditor /></WritePageLayout></PrivateRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

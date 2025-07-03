@@ -33,6 +33,7 @@ interface IUser {
   email: string;
   name?: string;
   bio?: string;
+  profileImage?: string;
   location?: string;
   website?: string;
   writingStreak?: number;

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "npm run build && node --experimental-specifier-resolution=node dist/src/index.js",
+    "dev": "npm run build && node dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "node --loader ts-node/esm prisma/seed.ts"
   },
@@ -17,6 +17,7 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^6.11.0",
     "@prisma/extension-accelerate": "^2.0.1",
+    "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",

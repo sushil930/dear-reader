@@ -56,7 +56,21 @@ export const login: RequestHandler = async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        entries: {
+          select: {
+            id: true, slug: true, title: true, content: true, date: true, mood: true, readTime: true, excerpt: true, tags: true, bannerImage: true, views: true, createdAt: true, updatedAt: true
+          }
+        },
+        drafts: {
+          select: {
+            id: true, title: true, content: true, mood: true, excerpt: true, tags: true, lastModified: true, wordCount: true
+          }
+        }
+      }
+    });
     if (!user) {
       res.status(400).json({ message: 'Invalid credentials' });
       return; // Explicit return after sending response
@@ -202,6 +216,7 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
         commentNotifications: true,
         likeNotifications: true,
         weeklyDigest: true,
+        profileImage: true,
         createdAt: true,
         entries: {
           select: {
@@ -298,6 +313,7 @@ export const updateUserProfile: RequestHandler = async (req, res) => {
         commentNotifications: true,
         likeNotifications: true,
         weeklyDigest: true,
+        profileImage: true,
         createdAt: true,
         entries: { // Include entries and drafts to match the structure returned by getCurrentUser
           select: {

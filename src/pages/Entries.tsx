@@ -14,6 +14,7 @@ const Entries = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>("all");
 
   const allEntries: IEntry[] = user?.entries || [];
+  console.log("All entries in Entries.tsx:", allEntries);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);

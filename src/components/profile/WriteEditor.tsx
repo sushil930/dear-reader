@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent, useRef } from 'react';
+import React, { useState, useCallback, memo, Dispatch, SetStateAction, ChangeEvent, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import { IDraft, IEntry } from '@/context/AuthContext';
@@ -28,6 +29,7 @@ import {
   Highlighter,
   CheckSquare
 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface EditorViewProps {
   title: string;
@@ -44,8 +46,6 @@ interface EditorViewProps {
   removeTag: (tagToRemove: string) => void;
   excerpt: string;
   setExcerpt: Dispatch<SetStateAction<string>>;
-  isPreview: boolean;
-  setIsPreview: Dispatch<SetStateAction<boolean>>;
   handleSaveDraft: () => Promise<void>;
   handlePublish: () => Promise<void>;
   handleImageUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
@@ -61,7 +61,7 @@ interface PreviewViewProps {
   mood: string;
 }
 
-const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, isPreview, setIsPreview, handleSaveDraft, handlePublish, handleImageUpload, textareaRef, handleFormatText }: EditorViewProps) => (
+const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, setMood, moods, newTag, setNewTag, addTag, tags, removeTag, excerpt, setExcerpt, handleSaveDraft, handlePublish, handleImageUpload, textareaRef, handleFormatText }: EditorViewProps) => (
 
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
     {/* Main Editor */}
@@ -86,9 +86,9 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
             </label>
             
             {/* Enhanced Formatting Toolbar */}
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-3 shadow-sm">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-1 shadow-sm">
               {/* Text Formatting Row */}
-              <div className="flex flex-wrap items-center gap-1 mb-2">
+              <div className="flex flex-wrap items-center gap-1">
                 <div className="flex items-center gap-1 pr-3 border-r border-slate-300">
                   <Button
                     type="button"
@@ -377,15 +377,6 @@ const EditorView = memo(({ title, setTitle, content, handleContentChange, mood, 
       {/* Actions */}
       <div className="space-y-3">
         <Button 
-          onClick={() => setIsPreview(!isPreview)}
-          variant="outline" 
-          className="w-full border-2 border-muted-brown/30 text-muted-brown hover:bg-muted-brown/10 font-garamond"
-        >
-          <Eye className="w-4 h-4 mr-2" />
-          {isPreview ? 'Edit' : 'Preview'}
-        </Button>
-        
-        <Button 
           onClick={handleSaveDraft}
           variant="outline" 
           className="w-full border-2 border-ink-blue/30 text-ink-blue hover:bg-ink-blue/10 font-garamond"
@@ -453,11 +444,36 @@ const WriteEditor = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [isPreview, setIsPreview] = useState(false);
+  const [activeTab, setActiveTab] = useState('write');
   const [entryDate, setEntryDate] = useState(new Date().toLocaleDateString());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const moods = ['Peaceful', 'Excited', 'Contemplative', 'Joyful', 'Melancholy', 'Reflective', 'Energetic', 'Calm', 'Anxious', 'Hopeful'];
+
+  const [searchParams] = useSearchParams();
+  const draftId = searchParams.get('draftId');
+
+  useEffect(() => {
+    if (draftId && token) {
+      const fetchDraft = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/drafts/${draftId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const draft = response.data;
+          setTitle(draft.title || '');
+          setContent(draft.content || '');
+          setMood(draft.mood || '');
+          setTags(draft.tags || []);
+          setExcerpt(draft.excerpt || '');
+        } catch (error) {
+          console.error('Failed to fetch draft:', error);
+          // Optionally navigate away or show an error message
+        }
+      };
+      fetchDraft();
+    }
+  }, [draftId, token]);
 
   const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -657,39 +673,58 @@ const WriteEditor = () => {
       
       <div className="ornamental-divider"></div>
       
-      {isPreview ? 
-        <PreviewView 
-          title={title}
-          content={content}
-          tags={tags}
-          entryDate={entryDate}
-          mood={mood}
-        /> 
-        : 
-        <EditorView
-          title={title}
-          setTitle={setTitle}
-          content={content}
-          handleContentChange={handleContentChange}
-          mood={mood}
-          setMood={setMood}
-          moods={moods}
-          newTag={newTag}
-          setNewTag={setNewTag}
-          addTag={addTag}
-          tags={tags}
-          removeTag={removeTag}
-          excerpt={excerpt}
-          setExcerpt={setExcerpt}
-          setIsPreview={setIsPreview}
-          handleSaveDraft={handleSaveDraft}
-          handlePublish={handlePublish}
-          handleImageUpload={handleImageUpload}
-          textareaRef={textareaRef}
-          handleFormatText={handleFormatText}
-          isPreview={isPreview}
-        />
-      }
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="mb-8">
+          <TabsList className="flex w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl py-6 overflow-hidden">
+            <TabsTrigger 
+              value="write" 
+              className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
+            >
+              Write
+            </TabsTrigger>
+            <TabsTrigger 
+              value="preview" 
+              className="font-garamond text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 flex-1 items-center justify-center"
+            >
+              Preview
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="write">
+          <EditorView
+            title={title}
+            setTitle={setTitle}
+            content={content}
+            handleContentChange={handleContentChange}
+            mood={mood}
+            setMood={setMood}
+            moods={moods}
+            newTag={newTag}
+            setNewTag={setNewTag}
+            addTag={addTag}
+            tags={tags}
+            removeTag={removeTag}
+            excerpt={excerpt}
+            setExcerpt={setExcerpt}
+            handleSaveDraft={handleSaveDraft}
+            handlePublish={handlePublish}
+            handleImageUpload={handleImageUpload}
+            textareaRef={textareaRef}
+            handleFormatText={handleFormatText}
+          />
+        </TabsContent>
+
+        <TabsContent value="preview">
+          <PreviewView 
+            title={title}
+            content={content}
+            tags={tags}
+            entryDate={entryDate}
+            mood={mood}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
