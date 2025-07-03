@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Example: Fetch user data if token is valid
       const fetchUser = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/auth/me'); // Example endpoint to get user data
+          const response = await axios.get('/api/auth/me'); // Example endpoint to get user data
           setUser(response.data);
         } catch (error) {
           console.error('Failed to fetch user data:', error);
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
     try {
-      const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
+      const response = await axios.put('/api/auth/profile', userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

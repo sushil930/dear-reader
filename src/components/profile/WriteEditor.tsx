@@ -457,7 +457,7 @@ const WriteEditor = () => {
     if (draftId && token) {
       const fetchDraft = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/drafts/${draftId}`, {
+          const response = await axios.get(`/api/drafts/${draftId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const draft = response.data;
@@ -591,7 +591,7 @@ const WriteEditor = () => {
     formData.append('image', file);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+      const response = await axios.post('/api/upload/image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -614,7 +614,7 @@ const WriteEditor = () => {
       return;
     }
     try {
-      const response = await axios.post<IDraft>('http://localhost:5000/api/drafts', {
+      const response = await axios.post<IDraft>('/api/drafts', {
         title,
         content,
         mood,
@@ -636,7 +636,7 @@ const WriteEditor = () => {
       return;
     }
     try {
-      const response = await axios.post<IEntry>('http://localhost:5000/api/entries', {
+      const response = await axios.post<IEntry>('/api/entries', {
         title,
         content,
         mood,

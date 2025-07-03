@@ -32,7 +32,7 @@ const DraftManager = () => {
       return;
     }
     try {
-      const response = await axios.post(`http://localhost:5000/api/drafts/publish/${draftId}`, {},
+      const response = await axios.post(`/api/drafts/publish/${draftId}`, {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ const DraftManager = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:5000/api/drafts/${draftId}`, {
+      await axios.delete(`/api/drafts/${draftId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -22,7 +22,7 @@ export default function Register() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await axios.post('/api/auth/register', {
         name: fullName, // Send fullName as 'name'
         email,
         password,

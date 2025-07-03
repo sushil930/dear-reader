@@ -40,7 +40,7 @@ const ProfileHeader = () => {
     formData.append('profileImage', file);
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/users/${user.id}/upload-profile-image`, formData, {
+      const response = await axios.post(`/api/users/${user.id}/upload-profile-image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
