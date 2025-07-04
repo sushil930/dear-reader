@@ -1,20 +1,25 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
       const response = await axios.post('/api/auth/login', {
@@ -22,10 +27,27 @@ export default function Login() {
         password,
       });
 
-      login(response.data.token, response.data.user); // Update global auth state
-      navigate('/profile'); // Redirect to profile page
+      login(response.data.token, response.data.user);
+      
+      toast({
+        title: "Welcome back, Dear Reader!",
+        description: "You have successfully signed in to your diary.",
+        className: "bg-cream border-muted-brown/30 shadow-lg"
+      });
+      
+      navigate('/profile');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
+      
+      toast({
+        title: "Authentication Failed",
+        description: errorMessage,
+        variant: "destructive",
+        className: "bg-red-50 border-red-200 shadow-lg"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -88,6 +110,7 @@ export default function Login() {
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             
@@ -102,15 +125,19 @@ export default function Login() {
                 className="mt-1 h-12 bg-cream/50 border-2 border-muted-brown/30 rounded-xl font-garamond text-base placeholder:text-muted-brown/60 focus:border-ink-blue focus:ring-ink-blue/20 transition-all duration-300" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             
             {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             <Button 
               type="submit" 
-              className="w-full vintage-button text-cream font-garamond text-lg py-4 rounded-full mt-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+              disabled={isLoading}
+              className="w-full vintage-button text-cream font-garamond text-lg py-4 rounded-full mt-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="relative z-10">Login</span>
+              <span className="relative z-10">
+                {isLoading ? 'Signing In...' : 'Login'}
+              </span>
             </Button>
           </form>
           
