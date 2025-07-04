@@ -24,7 +24,7 @@ const Footer = () => {
           {/* Social Media Icons */}
           <div className="flex items-center space-x-4">
             <a 
-              href="https://github.com" 
+              href="https://github.com/sushil930/dear-reader.git" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-brown hover:text-forest-green transition-all duration-300 hover:scale-110"
@@ -53,18 +53,7 @@ const Footer = () => {
               </svg>
             </a>
             <a 
-              href="https://railway.app" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-muted-brown hover:text-forest-green transition-all duration-300 hover:scale-110"
-              aria-label="Railway"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13.5 2v8.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2h10.5zM21 13.5v8.5H10.5v-8.5a1 1 0 0 1 1-1H20a1 1 0 0 1 1 1z"/>
-              </svg>
-            </a>
-            <a 
-              href="https://lovable.dev" 
+              href="https://reflections-dairy.lovable.app/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-brown hover:text-forest-green transition-all duration-300 hover:scale-110"

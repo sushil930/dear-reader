@@ -1,3 +1,5 @@
+![Banner Image](public/assets/screenshots/banner-image.jpg)
+
 # Dear Reader - A Psychology Diary
 
 A personal psychology diary application designed for self-reflection and emotional awareness. This platform allows users to securely record their thoughts, feelings, and experiences, offering tools for introspection and personal growth.
@@ -16,6 +18,20 @@ A personal psychology diary application designed for self-reflection and emotion
 *   **Secure Data Storage:** All entries and user data are securely managed and stored using Prisma with a robust database backend.
 *   **Cross-Origin Resource Sharing (CORS):** Properly configured for secure communication between frontend and backend.
 *   **Cookie Management:** Utilizes cookie-parser for handling session and authentication cookies.
+
+## Screenshots
+
+Here is a gallery of screenshots showcasing different pages and features of the application:
+
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="public/assets/screenshots/auth-page.jpeg" alt="Auth Page" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/editor-page.jpeg" alt="Editor Page" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/entry-page.jpeg" alt="Entry Page" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/profile-setting.jpeg" alt="Profile Setting" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/public-entries-page.jpeg" alt="Public Entries Page" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/supabase-schema.png" alt="Supabase Schema" style="width: 45%; height: auto; margin: 2%;" />
+  <img src="public/assets/screenshots/user-entries-section.jpeg" alt="User Entries Section" style="width: 45%; height: auto; margin: 2%;" />
+</div>
 
 ## Technologies and Tools Used
 
