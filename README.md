@@ -1,73 +1,127 @@
-# Welcome to your Lovable project
+# Dear Reader - A Psychology Diary
 
-## Project info
+A personal psychology diary application designed for self-reflection and emotional awareness. This platform allows users to securely record their thoughts, feelings, and experiences, offering tools for introspection and personal growth.
 
-**URL**: https://lovable.dev/projects/5eb8f021-a2e0-42f0-87ce-544eb768e734
+## Features
 
-## How can I edit this code?
+*   **User Authentication:** Secure user registration and login with JWT-based authentication.
+*   **Personalized Diary Entries:** Create, read, update, and delete (CRUD) your private diary entries.
+*   **Rich Text Editing:** Compose entries using Markdown, allowing for rich formatting and expressive writing.
+*   **Image Uploads:** Easily attach images to your diary entries, with secure storage powered by Cloudinary.
+*   **Intuitive User Interface:** A modern, responsive, and accessible user experience built with React and Shadcn UI components.
+*   **Theming:** Support for light and dark modes to suit your preference.
+*   **Date Navigation:** Easily navigate and select entries by date using an integrated date picker.
+*   **Notifications:** Receive interactive toast notifications for important actions and feedback.
+*   **Data Visualization:** Track and visualize personal insights or trends within your entries using charts.
+*   **Secure Data Storage:** All entries and user data are securely managed and stored using Prisma with a robust database backend.
+*   **Cross-Origin Resource Sharing (CORS):** Properly configured for secure communication between frontend and backend.
+*   **Cookie Management:** Utilizes cookie-parser for handling session and authentication cookies.
 
-There are several ways of editing your application.
+## Technologies and Tools Used
 
-**Use Lovable**
+This project leverages a modern tech stack for both its frontend and backend:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5eb8f021-a2e0-42f0-87ce-544eb768e734) and start prompting.
+### Frontend
 
-Changes made via Lovable will be committed automatically to this repo.
+*   **React:** A JavaScript library for building dynamic user interfaces.
+*   **Vite:** A fast build tool that provides an instant development server.
+*   **Shadcn UI:** A collection of beautifully designed, reusable components built with Radix UI and Tailwind CSS.
+*   **Tailwind CSS:** A utility-first CSS framework for rapid and custom UI development.
+*   **React Router DOM:** For declarative routing within the single-page application.
+*   **React Query:** For efficient data fetching, caching, and state management.
+*   **`react-markdown`:** For rendering Markdown content within diary entries.
 
-**Use your preferred IDE**
+### Backend
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+*   **Node.js & Express.js:** A powerful JavaScript runtime and a flexible web application framework.
+*   **TypeScript:** A superset of JavaScript that adds static typing for improved code quality and maintainability.
+*   **Prisma:** A next-generation ORM (Object-Relational Mapper) for seamless database interaction.
+*   **JWT (JSON Web Tokens):** For secure and stateless user authentication.
+*   **Bcrypt.js:** For robust password hashing and security.
+*   **Multer & Cloudinary:** For handling file uploads and cloud-based image storage.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting Started
 
-Follow these steps:
+Follow these instructions to set up and run the project locally.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+*   Node.js (v18 or higher recommended)
+*   npm or Yarn
+*   A database (e.g., PostgreSQL, MySQL) compatible with Prisma.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Installation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone <YOUR_GIT_URL>
+    cd reflections-dairy
+    ```
 
-**Edit a file directly in GitHub**
+2.  **Install frontend dependencies:**
+    ```bash
+    npm install
+    ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3.  **Install backend dependencies:**
+    ```bash
+    cd server
+    npm install
+    cd ..
+    ```
 
-**Use GitHub Codespaces**
+4.  **Set up Environment Variables:**
+    Create a `.env` file in the `server` directory with the following variables. Replace placeholders with your actual values:
+    ```
+    DATABASE_URL="your_database_connection_string"
+    JWT_SECRET="a_strong_secret_key_for_jwt"
+    CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
+    CLOUDINARY_API_KEY="your_cloudinary_api_key"
+    CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
+    ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+5.  **Database Setup:**
+    From the `server` directory, apply Prisma migrations and optionally seed the database:
+    ```bash
+    cd server
+    npx prisma migrate deploy
+    npm run seed # Optional: if you have seed data
+    cd ..
+    ```
 
-## What technologies are used for this project?
+### Running the Application
 
-This project is built with:
+1.  **Start the backend server:**
+    From the `server` directory:
+    ```bash
+    npm run dev
+    ```
+    The backend will typically run on `http://localhost:3000` (or as configured).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2.  **Start the frontend development server:**
+    From the root project directory:
+    ```bash
+    npm run dev
+    ```
+    The frontend will typically run on `http://localhost:5173` (or as configured by Vite).
 
-## How can I deploy this project?
+Open your browser and navigate to the frontend URL to access the application.
 
-Simply open [Lovable](https://lovable.dev/projects/5eb8f021-a2e0-42f0-87ce-544eb768e734) and click on Share -> Publish.
+## Deployment
 
-## Can I connect a custom domain to my Lovable project?
+This project can be deployed to various platforms. If you are using Lovable, you can deploy directly through their platform.
 
-Yes, you can!
+For custom deployments:
+*   **Frontend:** Build the React application (`npm run build`) and deploy the static files to a service like Netlify, Vercel, or GitHub Pages.
+*   **Backend:** Deploy the Node.js server to a platform like Heroku, Render, AWS EC2, or a custom VPS.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Contributing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+We welcome contributions to the Reflections Diary project! If you'd like to contribute, please follow these steps:
+
+1.  Fork the repository.
+2.  Create a new branch for your feature or bug fix.
+3.  Make your changes and ensure tests pass.
+4.  Commit your changes with a clear and descriptive message.
+5.  Push your branch to your forked repository.
+6.  Open a Pull Request to the main repository.
