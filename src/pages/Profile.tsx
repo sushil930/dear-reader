@@ -2,14 +2,13 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileHeader from '@/components/profile/ProfileHeader';
-import StatsCards from '@/components/profile/StatsCards';
 import EntryManager from '@/components/profile/EntryManager';
 import WriteEditor from '@/components/profile/WriteEditor';
 import DraftManager from '@/components/profile/DraftManager';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('entries');
 
   return (
     <div className="min-h-screen bg-cream relative overflow-hidden">
@@ -44,13 +43,7 @@ const Profile = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Navigation Tabs - Mobile Responsive */}
             <div className="mb-6 sm:mb-8">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl p-2 gap-1 sm:gap-2">
-                <TabsTrigger 
-                  value="dashboard" 
-                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
-                >
-                  Dashboard
-                </TabsTrigger>
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl p-2 gap-1 sm:gap-2">
                 <TabsTrigger 
                   value="entries" 
                   className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
@@ -71,7 +64,7 @@ const Profile = () => {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="settings" 
-                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center col-span-2 sm:col-span-1"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
                 >
                   Settings
                 </TabsTrigger>
@@ -80,13 +73,6 @@ const Profile = () => {
 
             {/* Tab Content Areas */}
             <div className="w-full">
-              <TabsContent 
-                value="dashboard" 
-                className="space-y-6 sm:space-y-8 transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block"
-              >
-                <StatsCards />
-              </TabsContent>
-
               <TabsContent 
                 value="entries" 
                 className="transition-all duration-300 data-[state=inactive]:hidden data-[state=active]:block"
