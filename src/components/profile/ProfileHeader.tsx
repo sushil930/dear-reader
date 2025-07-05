@@ -100,15 +100,15 @@ const ProfileHeader = () => {
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="text-xl sm:text-2xl font-garamond font-bold bg-cream/70 border-2 border-muted-brown/30 text-center lg:text-left"
+                className="text-xl sm:text-2xl font-garamond font-bold bg-cream/70 border-2 border-muted-brown/30"
               />
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="w-full p-3 rounded-lg bg-cream/70 border-2 border-muted-brown/30 font-garamond text-muted-brown resize-none text-center lg:text-left"
+                className="w-full p-3 rounded-lg bg-cream/70 border-2 border-muted-brown/30 font-garamond text-muted-brown resize-none"
                 rows={3}
               />
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button onClick={handleSave} className="vintage-button text-cream">
                   Save Changes
                 </Button>
@@ -136,7 +136,7 @@ const ProfileHeader = () => {
               </div>
               
               {bio && (
-                <p className="text-base sm:text-lg font-garamond italic text-muted-brown leading-relaxed max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg font-garamond italic text-muted-brown leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   {bio}
                 </p>
               )}
