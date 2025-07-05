@@ -135,7 +135,7 @@ const ProfileHeader = () => {
               </div>
               
               {bio && (
-                <p className="text-lg font-garamond italic text-muted-brown leading-relaxed max-w-2xl">
+                <p className="text-lg font-garamond text-center italic text-muted-brown leading-relaxed max-w-2xl">
                   {bio}
                 </p>
               )}
