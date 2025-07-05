@@ -44,34 +44,34 @@ const Profile = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Navigation Tabs - Mobile Responsive */}
             <div className="mb-6 sm:mb-8">
-              <TabsList className="flex flex-col sm:flex-row w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl p-2 sm:py-6 overflow-hidden gap-2 sm:gap-0">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full bg-cream/50 border-2 border-muted-brown/20 rounded-xl p-2 gap-1 sm:gap-2">
                 <TabsTrigger 
                   value="dashboard" 
-                  className="font-garamond text-sm sm:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-3 sm:py-2 sm:px-2 flex-1 items-center justify-center w-full sm:w-auto"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
                 >
                   Dashboard
                 </TabsTrigger>
                 <TabsTrigger 
                   value="entries" 
-                  className="font-garamond text-sm sm:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-3 sm:py-2 sm:px-2 flex-1 items-center justify-center w-full sm:w-auto"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
                 >
                   My Entries
                 </TabsTrigger>
                 <TabsTrigger 
                   value="write" 
-                  className="font-garamond text-sm sm:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-3 sm:py-2 sm:px-2 flex-1 items-center justify-center w-full sm:w-auto"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
                 >
                   Write New
                 </TabsTrigger>
                 <TabsTrigger 
                   value="drafts" 
-                  className="font-garamond text-sm sm:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-3 sm:py-2 sm:px-2 flex-1 items-center justify-center w-full sm:w-auto"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center"
                 >
                   Drafts
                 </TabsTrigger>
                 <TabsTrigger 
                   value="settings" 
-                  className="font-garamond text-sm sm:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-3 sm:py-2 sm:px-2 flex-1 items-center justify-center w-full sm:w-auto"
+                  className="font-garamond text-xs sm:text-base lg:text-lg data-[state=active]:bg-ink-blue data-[state=active]:text-cream rounded-xl transition-all duration-300 py-2 px-2 text-center min-h-[44px] flex items-center justify-center col-span-2 sm:col-span-1"
                 >
                   Settings
                 </TabsTrigger>
