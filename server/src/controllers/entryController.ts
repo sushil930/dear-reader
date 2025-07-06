@@ -73,19 +73,40 @@ export const getPublicEntryBySlug: RequestHandler = async (req, res) => {
     return;
   }
 };
+
 export const getAllPublicEntries: RequestHandler = async (req, res) => {
   try {
     const entries = await prisma.entry.findMany({
+      where: { isPublic: true },
       orderBy: { date: 'desc' },
-      include: { author: { select: { name: true } } },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        bannerImage: true,
+        tags: true,
+        createdAt: true,
+        date: true,
+        author: {
+          select: { name: true },
+        },
+      },
     });
-    const processed = entries.map(e => ({ ...e, tags: Array.isArray(e.tags) ? e.tags : [] }));
+
+    // Ensure tags are always arrays (safety layer)
+    const processed = entries.map(e => ({
+      ...e,
+      tags: Array.isArray(e.tags) ? e.tags : [],
+    }));
+
     res.status(200).json(processed);
-    return;
   } catch (error) {
     console.error('Error fetching all entries:', error);
-    res.status(500).json({ message: 'Failed to fetch entries', error: (error as Error).message });
-    return;
+    res.status(500).json({
+      message: 'Failed to fetch entries',
+      error: (error as Error).message,
+    });
   }
 };
 

@@ -77,27 +77,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
+  
     if (storedToken) {
       setToken(storedToken);
-      // Optionally, fetch user data if needed, or decode token
-      // For now, we'll assume the token itself is enough to indicate login
-      // In a real app, you'd likely verify the token with the backend and fetch user details
       axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-      // Example: Fetch user data if token is valid
-      const fetchUser = async () => {
-        try {
-          const response = await axios.get('/api/auth/me'); // Example endpoint to get user data
-          setUser(response.data);
-        } catch (error) {
-          console.error('Failed to fetch user data:', error);
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
-        }
-      };
-      fetchUser();
     }
-    setLoading(false);
+  
+    // ✅ Always try to fetch user data (even if token is missing)
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get('/api/auth/me', {
+          withCredentials: true, // ✅ Allow cookies to be sent
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error('Session expired or user not authenticated:', error);
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUser();
   }, []);
 
   const login = (newToken: string, userData: IUser) => {
