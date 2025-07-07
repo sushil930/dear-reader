@@ -1,0 +1,12 @@
+name: Keep Server Alive
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # every 10 minutes
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping keep-alive endpoint
+        run: |
+          curl -X GET https://dear-reader-backend-7qfn.onrender.com/api/warmup

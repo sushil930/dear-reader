@@ -37,6 +37,17 @@ app.use('/api/drafts', draftRoutes);
 app.use('/api/upload', imageUploadRoutes);
 app.use('/api/users', userRoutes);
 
+// Warm-up endpoint
+app.get('/api/warmup', async (req, res) => {
+  try {
+    // Perform a simple database query to initialize the connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).send('Server warmed up');
+  } catch (error) {
+    res.status(500).send('Error warming up server');
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
